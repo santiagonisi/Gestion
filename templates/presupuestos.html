@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Presupuestos</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <header>
+        <h1>Gestión de Presupuestos</h1>
+        <nav>
+            <ul>
+                <li><a href="{{ url_for('presupuestos') }}">Presupuestos</a></li>
+                <li><a href="{{ url_for('proveedores') }}">Proveedores</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <h2>Agregar Presupuesto</h2>
+    <form action="{{ url_for('presupuestos') }}" method="POST">
+        <label for="proveedor_nombre">Proveedor:</label>
+        <input type="text" name="proveedor_nombre" required>
+
+        <label for="producto_nombre">Producto:</label>
+        <input type="text" name="producto_nombre" required>
+
+        <label for="precio">Precio:</label>
+        <input type="number" name="precio" required>
+
+        <label for="fecha">Fecha:</label>
+        <input type="date" name="fecha" required>
+
+        <label for="centro_costo_id">Centro de Costos:</label>
+        <input type="text" name="centro_costo_id" required>
+
+        <button type="submit">Agregar</button>
+    </form>
+
+    <h2>Lista de Presupuestos</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Fecha</th>
+                <th>Proveedor</th>
+                <th>Producto</th>
+                <th>Precio</th>
+                <th>Centro de Costos</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for presupuesto in presupuestos %}
+            <tr>
+                <td>{{ presupuesto.fecha }}</td>
+                <td>{{ presupuesto.proveedor }}</td>
+                <td>{{ presupuesto.producto }}</td>
+                <td>{{ presupuesto.precio }}</td>
+                <td>{{ presupuesto.centro_costo }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

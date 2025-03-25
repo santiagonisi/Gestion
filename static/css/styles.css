@@ -83,10 +83,23 @@ button {
     font-weight: bold;
     cursor: pointer;
     transition: background-color 0.3s ease;
+    margin-top: 10px;
 }
 
 button:hover {
     background-color: #d1a054; /* Amarillo tierra */
+}
+
+/* Asegurar que los campos de entrada y los menús desplegables tengan el mismo ancho */
+input, select {
+    width: 100%; /* Asegura que todos los campos ocupen el mismo ancho */
+    margin: 0 auto; /* Centra los campos dentro del formulario */
+    padding: 10px;
+    font-size: 14px;
+    border: 1px solid #ccc; /* Borde gris claro */
+    border-radius: 5px;
+    background-color: #f9f9f9; /* Fondo ligeramente gris */
+    box-sizing: border-box; /* Incluye el padding y el borde en el ancho total */
 }
 
 /* Tabla */

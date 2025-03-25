@@ -146,6 +146,7 @@ def presupuestos():
     
     conn.close()
     return render_template('presupuestos.html', presupuestos=presupuestos, proveedores=proveedores, centros_costos=centros_costos)
+
 # Página de proveedores
 @app.route('/proveedores', methods=['GET', 'POST'])
 def proveedores():
@@ -183,6 +184,19 @@ def eliminar_proveedor(proveedor_id):
     
     # Redirigir a la página de proveedores
     return redirect(url_for('proveedores'))
+
+@app.route('/eliminar_presupuesto/<int:presupuesto_id>', methods=['POST'])
+def eliminar_presupuesto(presupuesto_id):
+    conn = obtener_conexion()
+    cursor = conn.cursor()
+    
+    # Eliminar el presupuesto de la base de datos
+    cursor.execute('DELETE FROM presupuestos WHERE id = ?', (presupuesto_id,))
+    conn.commit()
+    conn.close()
+    
+    # Redirigir a la página de presupuestos
+    return redirect(url_for('presupuestos'))
 
 if __name__ == '__main__':
     crear_tablas()

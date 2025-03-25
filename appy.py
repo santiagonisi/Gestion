@@ -148,7 +148,6 @@ def presupuestos():
                            proveedores=proveedores, 
                            centros_costos=centros_costos)
 
-
 # Página de proveedores
 @app.route('/proveedores', methods=['GET', 'POST'])
 def proveedores():

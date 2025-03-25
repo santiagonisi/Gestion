@@ -106,11 +106,23 @@ def presupuestos():
         fecha = request.form['fecha']
         centro_costo_id = request.form['centro_costo_id']
         
-        cursor.execute('INSERT INTO proveedores_productos (proveedor_id, producto_id, precio, fecha, centro_costo_id) VALUES (?, ?, ?, ?, ?)',
-                       (proveedor_nombre, producto_nombre, precio, fecha, centro_costo_id))
-        conn.commit()
+        # Buscar IDs en la base de datos
+        cursor.execute("SELECT id FROM proveedores WHERE nombre = ?", (proveedor_nombre,))
+        proveedor = cursor.fetchone()
+        cursor.execute("SELECT id FROM productos WHERE nombre = ?", (producto_nombre,))
+        producto = cursor.fetchone()
+        
+        if proveedor and producto:
+            proveedor_id = proveedor['id']
+            producto_id = producto['id']
+
+            cursor.execute('INSERT INTO proveedores_productos (proveedor_id, producto_id, precio, fecha, centro_costo_id) VALUES (?, ?, ?, ?, ?)',
+                        (proveedor_id, producto_id, precio, fecha, centro_costo_id))
+            conn.commit()
+        
         return redirect(url_for('presupuestos'))
     
+    # Recuperar la lista de presupuestos
     cursor.execute('''
     SELECT pp.fecha, p.nombre AS proveedor, pr.nombre AS producto, pp.precio, cc.nombre AS centro_costo
     FROM proveedores_productos pp
@@ -120,8 +132,19 @@ def presupuestos():
     ''')
     presupuestos = cursor.fetchall()
     
+    # Obtener datos para el formulario
+    cursor.execute("SELECT id, nombre FROM proveedores")
+    proveedores = cursor.fetchall()
+
+    cursor.execute("SELECT id, nombre FROM productos")
+    productos = cursor.fetchall()
+
+    cursor.execute("SELECT id, nombre FROM centros_costos")
+    centros_costos = cursor.fetchall()
+    
     conn.close()
-    return render_template('presupuestos.html', presupuestos=presupuestos)
+    return render_template('presupuestos.html', presupuestos=presupuestos, proveedores=proveedores, productos=productos, centros_costos=centros_costos)
+
 
 # Página de proveedores
 @app.route('/proveedores', methods=['GET', 'POST'])

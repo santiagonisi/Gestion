@@ -39,6 +39,7 @@
     
         <label for="centro_costo_id">Centro de Costos:</label>
         <select name="centro_costo_id" required>
+            <option value="" disabled selected>Seleccionar opción</option> 
             {% for centro in centros_costos %}
             <option value="{{ centro.id }}">{{ centro.nombre }}</option>
             {% endfor %}

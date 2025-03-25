@@ -100,50 +100,53 @@ def presupuestos():
     cursor = conn.cursor()
     
     if request.method == 'POST':
-        proveedor_nombre = request.form['proveedor_nombre']
-        producto_nombre = request.form['producto_nombre']
+        proveedor_id = request.form['proveedor_nombre']
+        producto_nombre = request.form['producto_nombre']  # Ahora ingresado manualmente
         precio = request.form['precio']
         fecha = request.form['fecha']
         centro_costo_id = request.form['centro_costo_id']
-        
-        # Buscar IDs en la base de datos
-        cursor.execute("SELECT id FROM proveedores WHERE nombre = ?", (proveedor_nombre,))
-        proveedor = cursor.fetchone()
+
+        # Buscar si el producto ya existe en la base de datos
         cursor.execute("SELECT id FROM productos WHERE nombre = ?", (producto_nombre,))
         producto = cursor.fetchone()
-        
-        if proveedor and producto:
-            proveedor_id = proveedor['id']
-            producto_id = producto['id']
 
-            cursor.execute('INSERT INTO proveedores_productos (proveedor_id, producto_id, precio, fecha, centro_costo_id) VALUES (?, ?, ?, ?, ?)',
-                        (proveedor_id, producto_id, precio, fecha, centro_costo_id))
-            conn.commit()
-        
+        if producto:
+            producto_id = producto['id']
+        else:
+            # Insertar el producto si no existe
+            cursor.execute("INSERT INTO productos (nombre) VALUES (?)", (producto_nombre,))
+            producto_id = cursor.lastrowid  # Obtener el nuevo ID del producto
+
+        # Insertar el presupuesto con el producto (nuevo o existente)
+        cursor.execute(
+            'INSERT INTO proveedores_productos (proveedor_id, producto_id, precio, fecha, centro_costo_id) VALUES (?, ?, ?, ?, ?)',
+            (proveedor_id, producto_id, precio, fecha, centro_costo_id)
+        )
+        conn.commit()
         return redirect(url_for('presupuestos'))
     
-    # Recuperar la lista de presupuestos
+    # Obtener lista de presupuestos
     cursor.execute('''
-    SELECT pp.fecha, p.nombre AS proveedor, pr.nombre AS producto, pp.precio, cc.nombre AS centro_costo
-    FROM proveedores_productos pp
-    JOIN proveedores p ON pp.proveedor_id = p.id
-    JOIN productos pr ON pp.producto_id = pr.id
-    JOIN centros_costos cc ON pp.centro_costo_id = cc.id
+        SELECT pp.fecha, p.nombre AS proveedor, pr.nombre AS producto, pp.precio, cc.nombre AS centro_costo
+        FROM proveedores_productos pp
+        JOIN proveedores p ON pp.proveedor_id = p.id
+        JOIN productos pr ON pp.producto_id = pr.id
+        JOIN centros_costos cc ON pp.centro_costo_id = cc.id
     ''')
     presupuestos = cursor.fetchall()
-    
-    # Obtener datos para el formulario
+
+    # Obtener proveedores y centros de costos para el formulario
     cursor.execute("SELECT id, nombre FROM proveedores")
     proveedores = cursor.fetchall()
 
-    cursor.execute("SELECT id, nombre FROM productos")
-    productos = cursor.fetchall()
-
     cursor.execute("SELECT id, nombre FROM centros_costos")
     centros_costos = cursor.fetchall()
-    
+
     conn.close()
-    return render_template('presupuestos.html', presupuestos=presupuestos, proveedores=proveedores, productos=productos, centros_costos=centros_costos)
+    return render_template('presupuestos.html', 
+                           presupuestos=presupuestos, 
+                           proveedores=proveedores, 
+                           centros_costos=centros_costos)
 
 
 # Página de proveedores

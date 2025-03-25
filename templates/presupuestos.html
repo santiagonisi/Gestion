@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Presupuestos</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <header>
+        <h1>Gestión de Presupuestos</h1>
+        <nav>
+            <ul>
+                <li><a href="{{ url_for('presupuestos') }}">Presupuestos</a></li>
+                <li><a href="{{ url_for('proveedores') }}">Proveedores</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <h2>Agregar Presupuesto</h2>
+    <form action="{{ url_for('presupuestos') }}" method="POST">
+        <label for="proveedor_id">Proveedor:</label>
+        <select name="proveedor_id" required>
+            {% for proveedor in proveedores %}
+            <option value="{{ proveedor.id }}">{{ proveedor.nombre }}</option>
+            {% endfor %}
+        </select>
+    
+        <label for="producto_nombre">Producto:</label>
+        <input type="text" name="producto_nombre" required>
+    
+        <label for="precio">Precio:</label>
+        <input type="number" name="precio" required>
+    
+        <label for="fecha">Fecha:</label>
+        <input type="date" name="fecha" required>
+    
+        <label for="centro_costo_id">Centro de Costos:</label>
+        <select name="centro_costo_id" required>
+            {% for centro in centros_costos %}
+            <option value="{{ centro.id }}">{{ centro.nombre }}</option>
+            {% endfor %}
+        </select>
+    
+        <button type="submit">Agregar</button>
+    </form>
+    
+    <h2>Lista de Presupuestos</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Proveedor</th>
+                <th>Producto</th>
+                <th>Precio</th>
+                <th>Fecha</th>
+                <th>Centro de Costos</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for presupuesto in presupuestos %}
+            <tr>
+                <td>{{ presupuesto.proveedor }}</td>
+                <td>{{ presupuesto.producto_nombre }}</td>
+                <td>{{ presupuesto.precio }}</td>
+                <td>{{ presupuesto.fecha }}</td>
+                <td>{{ presupuesto.centro_costo }}</td>
+                <td>
+                    <form action="{{ url_for('eliminar_presupuesto', presupuesto_id=presupuesto.id) }}" method="POST" style="display:inline;">
+                        <button type="submit" class="btn-eliminar">Eliminar</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+</body>
+</html>

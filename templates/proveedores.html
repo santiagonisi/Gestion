@@ -50,10 +50,7 @@
                 <th>CUIT</th>
                 <th>Rubro</th>
                 <th>Ubicación</th>
-<<<<<<< HEAD
                 <th>Acciones</th> 
-=======
->>>>>>> b3f7416089424395663e862ca25cf9af97e0a074
             </tr>
         </thead>
         <tbody>
@@ -65,14 +62,11 @@
                 <td>{{ proveedor.cuit }}</td>
                 <td>{{ proveedor.rubro }}</td>
                 <td>{{ proveedor.ubicacion }}</td>
-<<<<<<< HEAD
                 <td>
                     <form action="{{ url_for('eliminar_proveedor', proveedor_id=proveedor.id) }}" method="POST" style="display:inline;">
                         <button type="submit" class="btn-eliminar">Eliminar</button>
                     </form>
                 </td>
-=======
->>>>>>> b3f7416089424395663e862ca25cf9af97e0a074
             </tr>
             {% endfor %}
         </tbody>

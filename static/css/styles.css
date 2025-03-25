@@ -157,8 +157,6 @@ table th:last-child, table td:last-child {
     padding: 20px;
 }
 
-
-
 /* Responsive Design */
 @media screen and (max-width: 768px) {
     /* Formularios */

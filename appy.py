@@ -1,6 +1,6 @@
 import os
 import sqlite3
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, send_from_directory, url_for
 
 app = Flask(__name__)
 
@@ -8,6 +8,11 @@ app = Flask(__name__)
 UPLOAD_FOLDER = 'uploads'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)  # Asegura que la carpeta exista
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+# Ruta para servir los archivos subidos
+@app.route('/uploads/<path:filename>')
+def uploaded_file(filename):
+    return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
 # Conectar a la base de datos
 def obtener_conexion():
@@ -72,6 +77,7 @@ def crear_tablas():
         precio REAL NOT NULL,
         fecha DATE NOT NULL,
         centro_costo_id TEXT NOT NULL,
+        pdf_path TEXT,
         FOREIGN KEY (proveedor_id) REFERENCES proveedores (id)
     )
     ''')
@@ -113,35 +119,39 @@ def presupuestos():
     
     if request.method == 'POST':
         # Obtener los datos del formulario
-        proveedor_id = request.form['proveedor_id']  # ID del proveedor seleccionado
+        proveedor_id = request.form['proveedor_id']
         producto_nombre = request.form['producto_nombre']
         precio = request.form['precio']
         fecha = request.form['fecha']
-        centro_costo_id = request.form['centro_costo_id']  # ID del centro de costos seleccionado
+        centro_costo_id = request.form['centro_costo_id']
         
         # Manejar el archivo PDF
         archivo_pdf = request.files.get('archivo_pdf')
         pdf_path = None
         if archivo_pdf:
-            pdf_filename = f"{producto_nombre}_{archivo_pdf.filename}"
-            pdf_path = os.path.join(app.config['UPLOAD_FOLDER'], pdf_filename)
-            archivo_pdf.save(pdf_path)  # Guardar el archivo en la carpeta de uploads
+            if archivo_pdf.filename.endswith('.pdf'):  # Validar que sea un archivo PDF
+                pdf_filename = f"{producto_nombre}_{archivo_pdf.filename}"
+                pdf_path = os.path.join(app.config['UPLOAD_FOLDER'], pdf_filename)
+                archivo_pdf.save(pdf_path)  # Guardar el archivo en la carpeta de uploads
+                pdf_path = os.path.relpath(pdf_path, start=app.root_path)  # Convertir a ruta relativa
+                print(f"Archivo guardado en: {pdf_path}")  # Verificar la ruta
+            else:
+                return "El archivo debe ser un PDF", 400
         
         # Insertar el presupuesto en la tabla presupuestos
         cursor.execute('''
-            INSERT INTO presupuestos (proveedor_id, producto_nombre, precio, fecha, centro_costo_id)
-            VALUES (?, ?, ?, ?, ?)
-        ''', (proveedor_id, producto_nombre, precio, fecha, centro_costo_id))
+            INSERT INTO presupuestos (proveedor_id, producto_nombre, precio, fecha, centro_costo_id, pdf_path)
+            VALUES (?, ?, ?, ?, ?, ?)
+        ''', (proveedor_id, producto_nombre, precio, fecha, centro_costo_id, pdf_path))
         conn.commit()
         return redirect(url_for('presupuestos'))
     
     # Obtener los presupuestos para mostrar en la tabla
     cursor.execute('''
-        SELECT pr.id, p.nombre AS proveedor, pr.producto_nombre, pr.precio, pr.fecha, cc.nombre AS centro_costo
+        SELECT pr.id, p.nombre AS proveedor, pr.producto_nombre, pr.precio, pr.fecha, cc.nombre AS centro_costo, pr.pdf_path
         FROM presupuestos pr
         JOIN proveedores p ON pr.proveedor_id = p.id
         JOIN centros_costos cc ON pr.centro_costo_id = cc.id
-        ORDER BY pr.fecha DESC
     ''')
     presupuestos = cursor.fetchall()
     
@@ -210,4 +220,4 @@ def eliminar_presupuesto(presupuesto_id):
 if __name__ == '__main__':
     crear_tablas()
     insertar_centros_costos()
-    app.run(debug=True) 
+    app.run(debug=True)

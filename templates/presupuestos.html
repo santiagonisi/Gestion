@@ -69,12 +69,12 @@
             <tr>
                 <td>{{ presupuesto.proveedor }}</td>
                 <td>{{ presupuesto.producto_nombre }}</td>
-                <td>{{ presupuesto.precio }}</td>
+                <td>${{ "{:,.2f}".format(presupuesto.precio) }}</td>
                 <td>{{ presupuesto.fecha }}</td>
                 <td>{{ presupuesto.centro_costo }}</td>
                 <td>
                     {% if presupuesto.pdf_path %}
-                    <a href="{{ url_for('static', filename=presupuesto.pdf_path) }}" target="_blank">Ver PDF</a>
+                    <a href="{{ url_for('uploaded_file', filename=presupuesto.pdf_path) }}" target="_blank">Ver PDF</a>
                     {% else %}
                     No disponible
                     {% endif %}

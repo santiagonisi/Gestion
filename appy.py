@@ -141,6 +141,7 @@ def presupuestos():
         FROM presupuestos pr
         JOIN proveedores p ON pr.proveedor_id = p.id
         JOIN centros_costos cc ON pr.centro_costo_id = cc.id
+        ORDER BY pr.fecha DESC
     ''')
     presupuestos = cursor.fetchall()
     

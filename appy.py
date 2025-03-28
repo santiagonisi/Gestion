@@ -119,6 +119,14 @@ def presupuestos():
         fecha = request.form['fecha']
         centro_costo_id = request.form['centro_costo_id']  # ID del centro de costos seleccionado
         
+        # Manejar el archivo PDF
+        archivo_pdf = request.files.get('archivo_pdf')
+        pdf_path = None
+        if archivo_pdf:
+            pdf_filename = f"{producto_nombre}_{archivo_pdf.filename}"
+            pdf_path = os.path.join(app.config['UPLOAD_FOLDER'], pdf_filename)
+            archivo_pdf.save(pdf_path)  # Guardar el archivo en la carpeta de uploads
+        
         # Insertar el presupuesto en la tabla presupuestos
         cursor.execute('''
             INSERT INTO presupuestos (proveedor_id, producto_nombre, precio, fecha, centro_costo_id)
@@ -201,4 +209,4 @@ def eliminar_presupuesto(presupuesto_id):
 if __name__ == '__main__':
     crear_tablas()
     insertar_centros_costos()
-    app.run(debug=True)
+    app.run(debug=True) 

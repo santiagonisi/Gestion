@@ -44,6 +44,9 @@
             <option value="{{ centro.id }}">{{ centro.nombre }}</option>
             {% endfor %}
         </select>
+
+        <label for="archivo_pdf">Adjuntar PDF:</label>
+        <input type="file" name="archivo_pdf" accept="application/pdf">
     
         <button type="submit">Agregar</button>
     </form>
@@ -68,6 +71,13 @@
                 <td>{{ presupuesto.precio }}</td>
                 <td>{{ presupuesto.fecha }}</td>
                 <td>{{ presupuesto.centro_costo }}</td>
+                <td>
+                    {% if presupuesto.pdf_path %}
+                    <a href="{{ url_for('static', filename=presupuesto.pdf_path) }}" target="_blank">Ver PDF</a>
+                    {% else %}
+                    No disponible
+                    {% endif %}
+                </td>
                 <td>
                     <form action="{{ url_for('eliminar_presupuesto', presupuesto_id=presupuesto.id) }}" method="POST" style="display:inline;">
                         <button type="submit" class="btn-eliminar">Eliminar</button>

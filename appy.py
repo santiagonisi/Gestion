@@ -123,9 +123,10 @@ def presupuestos():
         # Obtener los datos del formulario
         proveedor_id = request.form['proveedor_id']
         producto_nombre = request.form['producto_nombre']
-        precio = request.form['precio']
+        precio = request.form['precio'].replace(',', '.')  # Reemplazar ',' por '.'
         fecha = request.form['fecha']
         centro_costo_id = request.form['centro_costo_id']
+        
         
         # Manejar el archivo PDF
         archivo_pdf = request.files.get('archivo_pdf')

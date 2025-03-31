@@ -32,7 +32,7 @@
         <input type="text" name="producto_nombre" required>
         
         <label for="precio">Precio:</label>
-        <input type="number" name="precio" required>
+        <input type="text" name="precio" id="precio" required pattern="^\d+([.,]\d{1,2})?$" title="Ingrese un número válido con hasta 2 decimales (use ',' o '.')" placeholder="Ej: 1234,56">
         
         <label for="fecha">Fecha:</label>
         <input type="date" name="fecha" required>

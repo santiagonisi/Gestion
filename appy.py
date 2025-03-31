@@ -119,6 +119,9 @@ def presupuestos():
     conn = obtener_conexion()
     cursor = conn.cursor()
     
+    # Obtener el término de búsqueda si existe
+    search_query = request.args.get('search', '').strip()
+    
     if request.method == 'POST':
         # Obtener los datos del formulario
         proveedor_id = request.form['proveedor_id']
@@ -146,6 +149,23 @@ def presupuestos():
         conn.commit()
         print(f"Insertando en la base de datos: proveedor_id={proveedor_id}, producto_nombre={producto_nombre}, pdf_path={pdf_path}")
     
+    # Filtrar presupuestos si hay un término de búsqueda
+    if search_query:
+        cursor.execute('''
+            SELECT pr.id, p.nombre AS proveedor, pr.producto_nombre, pr.precio, pr.moneda, pr.fecha, cc.nombre AS centro_costo, pr.pdf_path
+            FROM presupuestos pr
+            JOIN proveedores p ON pr.proveedor_id = p.id
+            JOIN centros_costos cc ON pr.centro_costo_id = cc.id
+            WHERE p.nombre LIKE ? OR pr.producto_nombre LIKE ?
+        ''', (f'%{search_query}%', f'%{search_query}%'))
+    else:
+        cursor.execute('''
+            SELECT pr.id, p.nombre AS proveedor, pr.producto_nombre, pr.precio, pr.moneda, pr.fecha, cc.nombre AS centro_costo, pr.pdf_path
+            FROM presupuestos pr
+            JOIN proveedores p ON pr.proveedor_id = p.id
+            JOIN centros_costos cc ON pr.centro_costo_id = cc.id
+        ''')
+    
     # Obtener los presupuestos para mostrar en la tabla
     cursor.execute('''
         SELECT pr.id, p.nombre AS proveedor, pr.producto_nombre, pr.precio, pr.moneda, pr.fecha, cc.nombre AS centro_costo, pr.pdf_path
@@ -165,7 +185,7 @@ def presupuestos():
     centros_costos = cursor.fetchall()
     
     conn.close()
-    return render_template('presupuestos.html', presupuestos=presupuestos, proveedores=proveedores, centros_costos=centros_costos)
+    return render_template('presupuestos.html', presupuestos=presupuestos, proveedores=proveedores, centros_costos=centros_costos, search_query=search_query)
 
 # Página de proveedores
 @app.route('/proveedores', methods=['GET', 'POST'])

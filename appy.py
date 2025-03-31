@@ -12,7 +12,6 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 # Ruta para servir los archivos subidos
 @app.route('/uploads/<path:filename>')
 def uploaded_file(filename):
-    # Depuración: Verificar qué archivo se está intentando servir
     print(f"Intentando servir el archivo: {filename}")
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
@@ -22,7 +21,7 @@ def obtener_conexion():
     conn.row_factory = sqlite3.Row  
     return conn
 
-# Crear las tablas
+# Crear las tablas si no existen
 def crear_tablas():
     conn = obtener_conexion()
     cursor = conn.cursor()
@@ -77,6 +76,7 @@ def crear_tablas():
         proveedor_id INTEGER NOT NULL,
         producto_nombre TEXT NOT NULL,
         precio REAL NOT NULL,
+        moneda TEXT,
         fecha DATE NOT NULL,
         centro_costo_id TEXT NOT NULL,
         pdf_path TEXT,
@@ -124,43 +124,36 @@ def presupuestos():
         proveedor_id = request.form['proveedor_id']
         producto_nombre = request.form['producto_nombre']
         precio = request.form['precio'].replace(',', '.')  # Reemplazar ',' por '.'
+        moneda = request.form['moneda']  # Obtener la moneda seleccionada
         fecha = request.form['fecha']
         centro_costo_id = request.form['centro_costo_id']
-        
         
         # Manejar el archivo PDF
         archivo_pdf = request.files.get('archivo_pdf')
         pdf_path = None
         if archivo_pdf:
-            # Guardar el archivo en la carpeta de uploads
             filename = f"{producto_nombre}_{archivo_pdf.filename}"
             filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
             archivo_pdf.save(filepath)
             pdf_path = filename  # Guardar solo el nombre del archivo en la base de datos
-            
-            # Depuración: Verificar que el archivo se guardó correctamente
             print(f"Archivo PDF guardado en: {filepath}")
         
         # Insertar el presupuesto en la tabla presupuestos
         cursor.execute('''
-            INSERT INTO presupuestos (proveedor_id, producto_nombre, precio, fecha, centro_costo_id, pdf_path)
-            VALUES (?, ?, ?, ?, ?, ?)
-        ''', (proveedor_id, producto_nombre, precio, fecha, centro_costo_id, pdf_path))
+            INSERT INTO presupuestos (proveedor_id, producto_nombre, precio, moneda, fecha, centro_costo_id, pdf_path)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+        ''', (proveedor_id, producto_nombre, precio, moneda, fecha, centro_costo_id, pdf_path))
         conn.commit()
-        
-        # Depuración: Verificar los datos que se insertan en la base de datos
         print(f"Insertando en la base de datos: proveedor_id={proveedor_id}, producto_nombre={producto_nombre}, pdf_path={pdf_path}")
     
     # Obtener los presupuestos para mostrar en la tabla
     cursor.execute('''
-        SELECT pr.id, p.nombre AS proveedor, pr.producto_nombre, pr.precio, pr.fecha, cc.nombre AS centro_costo, pr.pdf_path
+        SELECT pr.id, p.nombre AS proveedor, pr.producto_nombre, pr.precio, pr.moneda, pr.fecha, cc.nombre AS centro_costo, pr.pdf_path
         FROM presupuestos pr
         JOIN proveedores p ON pr.proveedor_id = p.id
         JOIN centros_costos cc ON pr.centro_costo_id = cc.id
     ''')
     presupuestos = cursor.fetchall()
-    
-    # Depuración: Verificar los presupuestos cargados desde la base de datos
     print(f"Presupuestos cargados: {presupuestos}")
     
     # Obtener los proveedores para el menú desplegable
@@ -203,26 +196,18 @@ def proveedores():
 def eliminar_proveedor(proveedor_id):
     conn = obtener_conexion()
     cursor = conn.cursor()
-    
-    # Eliminar el proveedor de la base de datos
     cursor.execute('DELETE FROM proveedores WHERE id = ?', (proveedor_id,))
     conn.commit()
     conn.close()
-    
-    # Redirigir a la página de proveedores
     return redirect(url_for('proveedores'))
 
 @app.route('/eliminar_presupuesto/<int:presupuesto_id>', methods=['POST'])
 def eliminar_presupuesto(presupuesto_id):
     conn = obtener_conexion()
     cursor = conn.cursor()
-    
-    # Eliminar el presupuesto de la base de datos
     cursor.execute('DELETE FROM presupuestos WHERE id = ?', (presupuesto_id,))
     conn.commit()
     conn.close()
-    
-    # Redirigir a la página de presupuestos
     return redirect(url_for('presupuestos'))
 
 if __name__ == '__main__':

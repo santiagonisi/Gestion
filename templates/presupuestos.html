@@ -34,6 +34,12 @@
         <label for="precio">Precio:</label>
         <input type="text" name="precio" id="precio" required pattern="^\d+([.,]\d{1,2})?$" title="Ingrese un número válido con hasta 2 decimales (use ',' o '.')" placeholder="Ej: 1234,56">
         
+        <label for="moneda">Moneda:</label>
+        <select name="moneda" id="moneda" required>
+        <option value="USD">USD (Dólares)</option>
+        <option value="ARS">ARS (Pesos Argentinos)</option>
+        </select>
+
         <label for="fecha">Fecha:</label>
         <input type="date" name="fecha" required>
         
@@ -68,7 +74,7 @@
             <tr>
                 <td>{{ presupuesto.proveedor }}</td>
                 <td>{{ presupuesto.producto_nombre }}</td>
-                <td>${{ "{:,.2f}".format(presupuesto.precio) }}</td>
+                <td>${{ "{:,.2f}".format(presupuesto.precio) }} {{ presupuesto.moneda }}</td>
                 <td>{{ presupuesto.fecha }}</td>
                 <td>{{ presupuesto.centro_costo }}</td>
                 <td>

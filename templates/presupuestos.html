@@ -20,34 +20,33 @@
     </header>
 
     <h2>Agregar Presupuesto</h2>
-    <form action="{{ url_for('presupuestos') }}" method="POST">
+    <form action="{{ url_for('presupuestos') }}" method="POST" enctype="multipart/form-data">
         <label for="proveedor_id">Proveedor:</label>
         <select name="proveedor_id" required>
             {% for proveedor in proveedores %}
             <option value="{{ proveedor.id }}">{{ proveedor.nombre }}</option>
             {% endfor %}
         </select>
-    
+        
         <label for="producto_nombre">Producto:</label>
         <input type="text" name="producto_nombre" required>
-    
+        
         <label for="precio">Precio:</label>
         <input type="number" name="precio" required>
-    
+        
         <label for="fecha">Fecha:</label>
         <input type="date" name="fecha" required>
-    
+        
         <label for="centro_costo_id">Centro de Costos:</label>
         <select name="centro_costo_id" required>
-            <option value="" disabled selected>Seleccionar opción</option> 
             {% for centro in centros_costos %}
             <option value="{{ centro.id }}">{{ centro.nombre }}</option>
             {% endfor %}
         </select>
-
+    
         <label for="archivo_pdf">Adjuntar PDF:</label>
         <input type="file" name="archivo_pdf" accept="application/pdf">
-    
+        
         <button type="submit">Agregar</button>
     </form>
     
@@ -74,7 +73,7 @@
                 <td>{{ presupuesto.centro_costo }}</td>
                 <td>
                     {% if presupuesto.pdf_path %}
-                    <a href="{{ url_for('uploaded_file', filename=presupuesto.pdf_path) }}" target="_blank">Ver PDF</a>
+                    <a href="{{ url_for('uploaded_file', filename=presupuesto.pdf_path) }}" target="_blank" class="btn-eliminar">Ver PDF</a>
                     {% else %}
                     No disponible
                     {% endif %}

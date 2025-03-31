@@ -12,6 +12,8 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 # Ruta para servir los archivos subidos
 @app.route('/uploads/<path:filename>')
 def uploaded_file(filename):
+    # Depuración: Verificar qué archivo se está intentando servir
+    print(f"Intentando servir el archivo: {filename}")
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
 # Conectar a la base de datos
@@ -129,14 +131,14 @@ def presupuestos():
         archivo_pdf = request.files.get('archivo_pdf')
         pdf_path = None
         if archivo_pdf:
-            if archivo_pdf.filename.endswith('.pdf'):  # Validar que sea un archivo PDF
-                pdf_filename = f"{producto_nombre}_{archivo_pdf.filename}"
-                pdf_path = os.path.join(app.config['UPLOAD_FOLDER'], pdf_filename)
-                archivo_pdf.save(pdf_path)  # Guardar el archivo en la carpeta de uploads
-                pdf_path = os.path.relpath(pdf_path, start=app.root_path)  # Convertir a ruta relativa
-                print(f"Archivo guardado en: {pdf_path}")  # Verificar la ruta
-            else:
-                return "El archivo debe ser un PDF", 400
+            # Guardar el archivo en la carpeta de uploads
+            filename = f"{producto_nombre}_{archivo_pdf.filename}"
+            filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            archivo_pdf.save(filepath)
+            pdf_path = filename  # Guardar solo el nombre del archivo en la base de datos
+            
+            # Depuración: Verificar que el archivo se guardó correctamente
+            print(f"Archivo PDF guardado en: {filepath}")
         
         # Insertar el presupuesto en la tabla presupuestos
         cursor.execute('''
@@ -144,7 +146,9 @@ def presupuestos():
             VALUES (?, ?, ?, ?, ?, ?)
         ''', (proveedor_id, producto_nombre, precio, fecha, centro_costo_id, pdf_path))
         conn.commit()
-        return redirect(url_for('presupuestos'))
+        
+        # Depuración: Verificar los datos que se insertan en la base de datos
+        print(f"Insertando en la base de datos: proveedor_id={proveedor_id}, producto_nombre={producto_nombre}, pdf_path={pdf_path}")
     
     # Obtener los presupuestos para mostrar en la tabla
     cursor.execute('''
@@ -154,6 +158,9 @@ def presupuestos():
         JOIN centros_costos cc ON pr.centro_costo_id = cc.id
     ''')
     presupuestos = cursor.fetchall()
+    
+    # Depuración: Verificar los presupuestos cargados desde la base de datos
+    print(f"Presupuestos cargados: {presupuestos}")
     
     # Obtener los proveedores para el menú desplegable
     cursor.execute('SELECT id, nombre FROM proveedores')

@@ -167,12 +167,6 @@ def presupuestos():
         ''')
     
     # Obtener los presupuestos para mostrar en la tabla
-    cursor.execute('''
-        SELECT pr.id, p.nombre AS proveedor, pr.producto_nombre, pr.precio, pr.moneda, pr.fecha, cc.nombre AS centro_costo, pr.pdf_path
-        FROM presupuestos pr
-        JOIN proveedores p ON pr.proveedor_id = p.id
-        JOIN centros_costos cc ON pr.centro_costo_id = cc.id
-    ''')
     presupuestos = cursor.fetchall()
     print(f"Presupuestos cargados: {presupuestos}")
     

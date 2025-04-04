@@ -1,25 +1,45 @@
-/* Estilos generales */
 body {
     font-family: 'Arial', sans-serif;
     margin: 0;
     padding: 0;
-    background-color: white; /* Fondo blanco */
-    color: black; /* Texto negro */
+    background-color: white;
+    color: black; 
     line-height: 1.6;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    min-height: 100vh; /* Asegura que el contenido esté centrado verticalmente */
+    justify-content: flex-start; 
+    min-height: 100vh;
 }
 
 /* Header */
 header {
     width: 100%;
-    background: linear-gradient(90deg, #f9ca24, #d1a054); /* Degradado amarillo pastel y tierra */
+    background: linear-gradient(90deg, #f9ca24, #d1a054); 
     color: white;
     text-align: center;
     padding: 20px 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 0; 
+    box-sizing: border-box; 
+}
+
+header img.logo {
+    max-width: 150px; 
+    height: auto;
+    margin-bottom: 10px; 
+}
+
+header .header-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px; 
+    width: 100%;
 }
 
 h1 {
@@ -27,7 +47,7 @@ h1 {
     margin: 0;
     font-family: 'Arial', sans-serif;
     font-weight: bold;
-    color: white; /* Blanco para el título */
+    color: white; 
 }
 
 nav ul {
@@ -49,36 +69,40 @@ nav ul li a {
 /* Formularios */
 form {
     margin: 20px auto;
-    padding: 20px; /* Relleno interno para evitar que los campos choquen con los bordes */
-    max-width: 500px;
+    padding: 20px;
+    max-width: 600px; /* Ajuste del ancho */
     width: 100%;
-    border: 1px solid #ccc; /* Borde gris claro */
+    border: 1px solid #ccc;
     border-radius: 5px;
     background-color: white;
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Sombra ligera */
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
     display: flex;
     flex-direction: column;
-    gap: 15px; /* Espaciado entre los elementos del formulario */
+    gap: 15px;
 }
 
 label {
     font-weight: bold;
     margin-bottom: 5px;
+    font-size: 14px;
 }
 
-input, select, button {
-    width: calc(100% - 20px); /* Reduce el ancho para respetar el padding del formulario */
-    margin: 0 auto; /* Centra los campos dentro del formulario */
+input, select, button, textarea {
+    width: 100%;
     padding: 10px;
     font-size: 14px;
-    border: 1px solid #ccc; /* Borde gris claro */
+    border: 1px solid #ccc;
     border-radius: 5px;
-    background-color: #f9f9f9; /* Fondo ligeramente gris */
+    background-color: #f9f9f9;
+    box-sizing: border-box;
+}
+
+input[type="file"] {
+    padding: 5px;
 }
 
 button {
-    width: 100%; /* El botón ocupa todo el ancho disponible */
-    background-color: #f9ca24; /* Amarillo pastel */
+    background-color: #f9ca24;
     color: white;
     font-weight: bold;
     cursor: pointer;
@@ -87,19 +111,51 @@ button {
 }
 
 button:hover {
-    background-color: #d1a054; /* Amarillo tierra */
+    background-color: #d1a054;
 }
 
-/* Asegurar que los campos de entrada y los menús desplegables tengan el mismo ancho */
-input, select {
-    width: 100%; /* Asegura que todos los campos ocupen el mismo ancho */
-    margin: 0 auto; /* Centra los campos dentro del formulario */
+/* Estilo para las opciones deshabilitadas en los menús desplegables */
+select option:disabled {
+    color: #a9a9a9; /* Gris claro */
+    font-style: italic; /* Opcional: para diferenciar aún más */
+}
+
+/* Formularios de búsqueda */
+.search-form {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px; /* Espaciado entre el campo de búsqueda y el botón */
+    max-width: 600px; /* Ancho máximo para mantener consistencia */
+    width: 100%; /* Ocupa todo el ancho disponible */
+    margin: 20px auto; /* Centrado en la página */
+}
+
+.search-form input {
+    flex: 1; /* El campo de búsqueda ocupa todo el espacio disponible */
     padding: 10px;
     font-size: 14px;
-    border: 1px solid #ccc; /* Borde gris claro */
+    border: 1px solid #ccc;
     border-radius: 5px;
-    background-color: #f9f9f9; /* Fondo ligeramente gris */
-    box-sizing: border-box; /* Incluye el padding y el borde en el ancho total */
+    background-color: #f9f9f9;
+    box-sizing: border-box;
+}
+
+search-form button {
+    flex-shrink: 0; /* El botón mantiene su tamaño fijo */
+    padding: 10px 15px;
+    font-size: 14px;
+    border: none;
+    border-radius: 5px;
+    background-color: #f9ca24;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.search-form button:hover {
+    background-color: #d1a054;
 }
 
 /* Tabla */
@@ -108,85 +164,58 @@ table {
     margin: 20px auto;
     border-collapse: collapse;
     background-color: white;
-    border: 1px solid #ccc; /* Borde gris claro */
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Sombra ligera */
+    border: 1px solid #ccc;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
     text-align: center;
 }
 
 th, td {
-    border: 1px solid #ccc; /* Bordes gris claro */
+    border: 1px solid #ccc;
     padding: 10px;
 }
 
 th {
-    background-color: #f4f4f4; /* Fondo gris claro */
+    background-color: #f4f4f4;
     font-weight: bold;
 }
 
 td {
     color: black;
-    vertical-align: middle; /* Asegura que el contenido esté centrado verticalmente */
+    vertical-align: middle;
 }
 
-/* Ajustes para el formulario dentro de las tablas */
-form {
-    margin: 0; /* Elimina márgenes del formulario */
-    padding: 0; /* Elimina rellenos del formulario */
-    display: inline; /* Asegura que el formulario no ocupe más espacio del necesario */
-    background: none; /* Elimina cualquier fondo blanco del formulario */
-    border: none; /* Elimina bordes del formulario */
-}
-
-/* Ajustes para el botón de eliminar */
+/* Botón eliminar */
 button, .btn-eliminar {
-    background-color: #f9ca24; /* Amarillo pastel */
+    background-color: #f9ca24;
     color: white;
     border: none;
-    padding: 5px 10px; /* Ajusta el tamaño del botón */
+    padding: 5px 10px;
     border-radius: 5px;
     cursor: pointer;
     font-size: 14px;
     transition: background-color 0.3s ease;
-    display: inline-block; /* Asegura que el botón no ocupe todo el ancho */
-    white-space: nowrap; /* Evita que el texto del botón se divida en varias líneas */
 }
 
 button:hover, .btn-eliminar:hover {
-    background-color: #d1a054; /* Amarillo tierra */
+    background-color: #d1a054;
 }
 
-/* Alinear el botón dentro de la celda */
-table td:last-child {
-    text-align: center; /* Centrar el contenido de la celda de acciones */
-    vertical-align: middle; /* Alinear verticalmente */
-    width: 100px; /* Asegura que la celda tenga un ancho fijo */
-}
-
-/* Ajustar el ancho de la columna de acciones */
-table th:last-child, table td:last-child {
-    width: 100px; /* Ajustar el ancho de la columna de acciones */
-}
-
-/* Centrado del contenido */
-.container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    max-width: 1200px;
-    padding: 20px;
-}
-
-/* Responsive Design */
+/* Diseño Responsive */
 @media screen and (max-width: 768px) {
-    /* Formularios */
     form {
-        width: 95%; /* El formulario ocupa el 95% del ancho de la pantalla */
+        width: 95%;
         padding: 15px;
     }
 
-    /* Tabla */
+    .search-form {
+        flex-direction: column; /* Cambia a diseño vertical */
+        gap: 15px; /* Espaciado entre los elementos */
+    }
+
+    .search-form input, .search-form button {
+        width: 100%; /* Ocupan todo el ancho disponible */
+    }
+
     table, thead, tbody, th, td, tr {
         display: block;
     }

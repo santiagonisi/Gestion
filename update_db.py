@@ -1,7 +1,7 @@
 import sqlite3
 
-# Conexión a la base de datos
-db_name = 'empresa.db'  # Cambia esto si tu base de datos tiene otro nombre
+#base de datos
+db_name = 'empresa.db' 
 try:
     conn = sqlite3.connect(db_name)
     cursor = conn.cursor()
@@ -10,7 +10,7 @@ except Exception as e:
     print(f"Error al conectar a la base de datos: {e}")
     exit()
 
-# Verificar si la tabla 'presupuestos' existe
+#verifica si 'presupuestos' existe
 try:
     cursor.execute("PRAGMA table_info(presupuestos);")
     columns = cursor.fetchall()
@@ -23,10 +23,10 @@ except Exception as e:
     print(f"Error al verificar la tabla 'presupuestos': {e}")
     exit()
 
-# Verificar si la columna 'pdf_path' ya existe
+#verifica si 'pdf_path' existe
 column_names = [column[1] for column in columns]
 if 'pdf_path' not in column_names:
-    # Agregar la columna 'pdf_path' si no existe
+    #agrega tabla pdf_path
     try:
         cursor.execute('ALTER TABLE presupuestos ADD COLUMN pdf_path TEXT;')
         print("Columna 'pdf_path' agregada correctamente.")
@@ -35,6 +35,6 @@ if 'pdf_path' not in column_names:
 else:
     print("La columna 'pdf_path' ya existe en la tabla 'presupuestos'.")
 
-# Confirmar los cambios y cerrar la conexión
+#confirmacion
 conn.commit()
 conn.close()

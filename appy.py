@@ -4,24 +4,24 @@ from flask import Flask, render_template, request, redirect, send_from_directory
 
 app = Flask(__name__)
 
-# Configuración de la carpeta de subida
+#configuracion carpeta uploads
 UPLOAD_FOLDER = 'uploads'
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)  # Asegura que la carpeta exista
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-# Ruta para servir los archivos subidos
+#carpeta uploads
 @app.route('/uploads/<path:filename>')
 def uploaded_file(filename):
     print(f"Intentando servir el archivo: {filename}")
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
-# Conectar a la base de datos
+#base de datos
 def obtener_conexion():
     conn = sqlite3.connect('empresa.db', check_same_thread=False)
     conn.row_factory = sqlite3.Row  
     return conn
 
-# Crear las tablas si no existen
+#tablas
 def crear_tablas():
     conn = obtener_conexion()
     cursor = conn.cursor()
@@ -37,12 +37,12 @@ def crear_tablas():
     cursor.execute('''
     CREATE TABLE IF NOT EXISTS proveedores (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        nombre TEXT NOT NULL UNIQUE,
         razonsocial TEXT,
         contacto TEXT,
         cuit TEXT,
         rubro TEXT,
-        ubicacion TEXT
+        ubicacion TEXT,
+        descripcion TEXT
     )
     ''')
 
@@ -87,7 +87,7 @@ def crear_tablas():
     conn.commit()
     conn.close()
 
-# Insertar centros de costos si no existen
+#centro de costos
 def insertar_centros_costos():
     conn = obtener_conexion()
     cursor = conn.cursor()
@@ -112,36 +112,36 @@ def insertar_centros_costos():
     conn.commit()
     conn.close()
 
-# Página principal (Presupuestos)
+#presupuestos/paginaprincipal
 @app.route('/')
 @app.route('/presupuestos', methods=['GET', 'POST'])
 def presupuestos():
     conn = obtener_conexion()
     cursor = conn.cursor()
     
-    # Obtener el término de búsqueda si existe
+    
     search_query = request.args.get('search', '').strip()
     
     if request.method == 'POST':
-        # Obtener los datos del formulario
+        #datos del formulario
         proveedor_id = request.form['proveedor_id']
         producto_nombre = request.form['producto_nombre']
-        precio = request.form['precio'].replace(',', '.')  # Reemplazar ',' por '.'
-        moneda = request.form['moneda']  # Obtener la moneda seleccionada
+        precio = request.form['precio'].replace(',', '.')
+        moneda = request.form['moneda']
         fecha = request.form['fecha']
         centro_costo_id = request.form['centro_costo_id']
         
-        # Manejar el archivo PDF
+        #PDF
         archivo_pdf = request.files.get('archivo_pdf')
         pdf_path = None
         if archivo_pdf:
             filename = f"{producto_nombre}_{archivo_pdf.filename}"
             filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
             archivo_pdf.save(filepath)
-            pdf_path = filename  # Guardar solo el nombre del archivo en la base de datos
+            pdf_path = filename 
             print(f"Archivo PDF guardado en: {filepath}")
         
-        # Insertar el presupuesto en la tabla presupuestos
+        #insertar el presupuesto en la tabla presupuestos
         cursor.execute('''
             INSERT INTO presupuestos (proveedor_id, producto_nombre, precio, moneda, fecha, centro_costo_id, pdf_path)
             VALUES (?, ?, ?, ?, ?, ?, ?)
@@ -149,7 +149,7 @@ def presupuestos():
         conn.commit()
         print(f"Insertando en la base de datos: proveedor_id={proveedor_id}, producto_nombre={producto_nombre}, pdf_path={pdf_path}")
     
-    # Filtrar presupuestos si hay un término de búsqueda
+    #filtro de búsqueda presupuestos
     if search_query:
         cursor.execute('''
             SELECT pr.id, p.nombre AS proveedor, pr.producto_nombre, pr.precio, pr.moneda, pr.fecha, cc.nombre AS centro_costo, pr.pdf_path
@@ -166,37 +166,37 @@ def presupuestos():
             JOIN centros_costos cc ON pr.centro_costo_id = cc.id
         ''')
     
-    # Obtener los presupuestos para mostrar en la tabla
+    #mostrar en tabla los presupuestos
     presupuestos = cursor.fetchall()
     print(f"Presupuestos cargados: {presupuestos}")
     
-    # Obtener los proveedores para el menú desplegable
+    #menú desplegable de proveedores
     cursor.execute('SELECT id, nombre FROM proveedores')
     proveedores = cursor.fetchall()
     
-    # Obtener los centros de costos para el menú desplegable
+    #menú desplegable de centros de costos
     cursor.execute('SELECT id, nombre FROM centros_costos')
     centros_costos = cursor.fetchall()
     
     conn.close()
     return render_template('presupuestos.html', presupuestos=presupuestos, proveedores=proveedores, centros_costos=centros_costos, search_query=search_query)
 
-# Página de proveedores
+#proveedores
 @app.route('/proveedores', methods=['GET', 'POST'])
 def proveedores():
     conn = obtener_conexion()
     cursor = conn.cursor()
     
     if request.method == 'POST':
-        nombre = request.form['nombre']
         razonsocial = request.form['razonsocial']
         contacto = request.form['contacto']
         cuit = request.form['cuit']
         rubro = request.form['rubro']
         ubicacion = request.form['ubicacion']
+        descripcion = request.form['descripcion']
         
-        cursor.execute('INSERT INTO proveedores (nombre, razonsocial, contacto, cuit, rubro, ubicacion) VALUES (?, ?, ?, ?, ?, ?)',
-                       (nombre, razonsocial, contacto, cuit, rubro, ubicacion))
+        cursor.execute('INSERT INTO proveedores (razonsocial, contacto, cuit, rubro, ubicacion, descripcion) VALUES (?, ?, ?, ?, ?, ?)',
+                       (razonsocial, contacto, cuit, rubro, ubicacion, descripcion))
         conn.commit()
         return redirect(url_for('proveedores'))
     

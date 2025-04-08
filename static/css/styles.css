@@ -70,7 +70,7 @@ nav ul li a {
 form {
     margin: 20px auto;
     padding: 20px;
-    max-width: 600px; /* Ajuste del ancho */
+    max-width: 600px;
     width: 100%;
     border: 1px solid #ccc;
     border-radius: 5px;
@@ -114,10 +114,10 @@ button:hover {
     background-color: #d1a054;
 }
 
-/* Estilo para las opciones deshabilitadas en los menús desplegables */
+/* menús desplegables */
 select option:disabled {
-    color: #a9a9a9; /* Gris claro */
-    font-style: italic; /* Opcional: para diferenciar aún más */
+    color: #a9a9a9; 
+    font-style: italic;
 }
 
 /* Formularios de búsqueda */
@@ -125,14 +125,14 @@ select option:disabled {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 10px; /* Espaciado entre el campo de búsqueda y el botón */
-    max-width: 600px; /* Ancho máximo para mantener consistencia */
-    width: 100%; /* Ocupa todo el ancho disponible */
-    margin: 20px auto; /* Centrado en la página */
+    gap: 10px; 
+    max-width: 600px; 
+    width: 100%; 
+    margin: 20px auto;
 }
 
 .search-form input {
-    flex: 1; /* El campo de búsqueda ocupa todo el espacio disponible */
+    flex: 1; 
     padding: 10px;
     font-size: 14px;
     border: 1px solid #ccc;
@@ -142,7 +142,7 @@ select option:disabled {
 }
 
 search-form button {
-    flex-shrink: 0; /* El botón mantiene su tamaño fijo */
+    flex-shrink: 0; 
     padding: 10px 15px;
     font-size: 14px;
     border: none;
@@ -208,12 +208,12 @@ button:hover, .btn-eliminar:hover {
     }
 
     .search-form {
-        flex-direction: column; /* Cambia a diseño vertical */
-        gap: 15px; /* Espaciado entre los elementos */
+        flex-direction: column; 
+        gap: 15px;
     }
 
     .search-form input, .search-form button {
-        width: 100%; /* Ocupan todo el ancho disponible */
+        width: 100%;
     }
 
     table, thead, tbody, th, td, tr {

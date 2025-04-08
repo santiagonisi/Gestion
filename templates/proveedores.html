@@ -21,9 +21,7 @@
 
     <h2>Agregar Proveedor</h2>
     <form action="{{ url_for('proveedores') }}" method="POST">
-        <label for="nombre">Nombre:</label>
-        <input type="text" name="nombre" required>
-
+        
         <label for="razonsocial">Razón Social:</label>
         <input type="text" name="razonsocial" required>
 
@@ -39,31 +37,34 @@
         <label for="ubicacion">Ubicación:</label>
         <input type="text" name="ubicacion" required>
 
+        <label for="descripcion">Descripción:</label>
+        <textarea name="descripcion" rows="4" required></textarea>
+
         <button type="submit">Agregar</button>
     </form>
-
+    
     <h2>Lista de Proveedores</h2>
     <table>
         <thead>
             <tr>
-                <th>Nombre</th>
                 <th>Razón Social</th>
                 <th>Contacto</th>
                 <th>CUIT</th>
                 <th>Rubro</th>
                 <th>Ubicación</th>
+                <th>Descripción</th>
                 <th>Acciones</th> 
             </tr>
         </thead>
         <tbody>
             {% for proveedor in proveedores %}
             <tr>
-                <td>{{ proveedor.nombre }}</td>
                 <td>{{ proveedor.razonsocial }}</td>
                 <td>{{ proveedor.contacto }}</td>
                 <td>{{ proveedor.cuit }}</td>
                 <td>{{ proveedor.rubro }}</td>
                 <td>{{ proveedor.ubicacion }}</td>
+                <td>{{ proveedor.descripcion }}</td>
                 <td>
                     <form action="{{ url_for('eliminar_proveedor', proveedor_id=proveedor.id) }}" method="POST" style="display:inline;">
                         <button type="submit" class="btn-eliminar">Eliminar</button>

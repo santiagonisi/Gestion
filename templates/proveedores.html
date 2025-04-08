@@ -43,6 +43,12 @@
         <button type="submit">Agregar</button>
     </form>
     
+    <h2>Buscar Proveedor</h2>
+    <form method="GET" action="{{ url_for('proveedores') }}">
+        <input type="text" name="search" placeholder="Buscar proveedores..." value="{{ search_query }}">
+        <button type="submit">Buscar</button>
+    </form>
+
     <h2>Lista de Proveedores</h2>
     <table>
         <thead>

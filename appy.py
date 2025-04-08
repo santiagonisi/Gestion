@@ -187,6 +187,8 @@ def proveedores():
     conn = obtener_conexion()
     cursor = conn.cursor()
     
+    search_query = request.args.get('search', '').strip()
+    
     if request.method == 'POST':
         razonsocial = request.form['razonsocial']
         contacto = request.form['contacto']
@@ -203,8 +205,19 @@ def proveedores():
     cursor.execute('SELECT * FROM proveedores')
     proveedores = cursor.fetchall()
     
+    #filtro de búsqueda proveedores
+    if search_query:
+        cursor.execute('''
+            SELECT * FROM proveedores
+            WHERE razonsocial LIKE ? OR contacto LIKE ? OR cuit LIKE ? OR rubro LIKE ? OR ubicacion LIKE ? OR descripcion LIKE ?
+        ''', (f'%{search_query}%', f'%{search_query}%', f'%{search_query}%', f'%{search_query}%', f'%{search_query}%', f'%{search_query}%'))
+    else:
+        cursor.execute('SELECT * FROM proveedores')
+    
+    proveedores = cursor.fetchall()
+    
     conn.close()
-    return render_template('proveedores.html', proveedores=proveedores)
+    return render_template('proveedores.html', proveedores=proveedores, search_query=search_query)
 
 @app.route('/eliminar_proveedor/<int:proveedor_id>', methods=['POST'])
 def eliminar_proveedor(proveedor_id):

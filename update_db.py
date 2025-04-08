@@ -35,6 +35,19 @@ if 'pdf_path' not in column_names:
 else:
     print("La columna 'pdf_path' ya existe en la tabla 'presupuestos'.")
 
+# Verificar si la columna 'descripcion' existe en la tabla 'proveedores'
+try:
+    cursor.execute("PRAGMA table_info(proveedores);")
+    columns = cursor.fetchall()
+    column_names = [column[1] for column in columns]
+    if 'descripcion' not in column_names:
+        cursor.execute("ALTER TABLE proveedores ADD COLUMN descripcion TEXT;")
+        print("Columna 'descripcion' agregada correctamente.")
+    else:
+        print("La columna 'descripcion' ya existe en la tabla 'proveedores'.")
+except Exception as e:
+    print(f"Error al verificar o agregar la columna 'descripcion': {e}")
+
 #confirmacion
 conn.commit()
 conn.close()

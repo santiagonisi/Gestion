@@ -25,7 +25,7 @@
         <select name="proveedor_id" required>
             <option value="" selected disabled>Elegir opción</option>
             {% for proveedor in proveedores %}
-            <option value="{{ proveedor.id }}">{{ proveedor.nombre }}</option>
+            <option value="{{ proveedor.id }}">{{ proveedor.razonsocial }}</option>
             {% endfor %}
         </select>
         

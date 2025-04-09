@@ -119,11 +119,10 @@ def presupuestos():
     conn = obtener_conexion()
     cursor = conn.cursor()
     
-    
     search_query = request.args.get('search', '').strip()
     
     if request.method == 'POST':
-        #datos del formulario
+        # Datos del formulario
         proveedor_id = request.form['proveedor_id']
         producto_nombre = request.form['producto_nombre']
         precio = request.form['precio'].replace(',', '.')
@@ -131,7 +130,7 @@ def presupuestos():
         fecha = request.form['fecha']
         centro_costo_id = request.form['centro_costo_id']
         
-        #PDF
+        # PDF
         archivo_pdf = request.files.get('archivo_pdf')
         pdf_path = None
         if archivo_pdf:
@@ -139,42 +138,39 @@ def presupuestos():
             filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
             archivo_pdf.save(filepath)
             pdf_path = filename 
-            print(f"Archivo PDF guardado en: {filepath}")
         
-        #insertar el presupuesto en la tabla presupuestos
+        # Insertar el presupuesto en la tabla presupuestos
         cursor.execute('''
             INSERT INTO presupuestos (proveedor_id, producto_nombre, precio, moneda, fecha, centro_costo_id, pdf_path)
             VALUES (?, ?, ?, ?, ?, ?, ?)
         ''', (proveedor_id, producto_nombre, precio, moneda, fecha, centro_costo_id, pdf_path))
         conn.commit()
-        print(f"Insertando en la base de datos: proveedor_id={proveedor_id}, producto_nombre={producto_nombre}, pdf_path={pdf_path}")
     
-    #filtro de búsqueda presupuestos
+    # Filtro de búsqueda presupuestos
     if search_query:
         cursor.execute('''
-            SELECT pr.id, p.nombre AS proveedor, pr.producto_nombre, pr.precio, pr.moneda, pr.fecha, cc.nombre AS centro_costo, pr.pdf_path
+            SELECT pr.id, p.razonsocial AS proveedor, pr.producto_nombre, pr.precio, pr.moneda, pr.fecha, cc.nombre AS centro_costo, pr.pdf_path
             FROM presupuestos pr
             JOIN proveedores p ON pr.proveedor_id = p.id
             JOIN centros_costos cc ON pr.centro_costo_id = cc.id
-            WHERE p.nombre LIKE ? OR pr.producto_nombre LIKE ?
+            WHERE p.razonsocial LIKE ? OR pr.producto_nombre LIKE ?
         ''', (f'%{search_query}%', f'%{search_query}%'))
     else:
         cursor.execute('''
-            SELECT pr.id, p.nombre AS proveedor, pr.producto_nombre, pr.precio, pr.moneda, pr.fecha, cc.nombre AS centro_costo, pr.pdf_path
+            SELECT pr.id, p.razonsocial AS proveedor, pr.producto_nombre, pr.precio, pr.moneda, pr.fecha, cc.nombre AS centro_costo, pr.pdf_path
             FROM presupuestos pr
             JOIN proveedores p ON pr.proveedor_id = p.id
             JOIN centros_costos cc ON pr.centro_costo_id = cc.id
         ''')
     
-    #mostrar en tabla los presupuestos
+    # Mostrar en tabla los presupuestos
     presupuestos = cursor.fetchall()
-    print(f"Presupuestos cargados: {presupuestos}")
     
-    #menú desplegable de proveedores
-    cursor.execute('SELECT id, nombre FROM proveedores')
+    # Menú desplegable de proveedores
+    cursor.execute('SELECT id, razonsocial FROM proveedores')
     proveedores = cursor.fetchall()
     
-    #menú desplegable de centros de costos
+    # Menú desplegable de centros de costos
     cursor.execute('SELECT id, nombre FROM centros_costos')
     centros_costos = cursor.fetchall()
     

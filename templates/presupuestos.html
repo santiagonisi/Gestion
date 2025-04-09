@@ -66,42 +66,42 @@
     </form>
 
     <h2>Lista de Presupuestos</h2>
-    <table>
-        <thead>
-            <tr>
-                <th>Proveedor</th>
-                <th>Producto</th>
-                <th>Precio</th>
-                <th>Fecha</th>
-                <th>Centro de Costos</th>
-                <th>Detalle</th> 
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for presupuesto in presupuestos %}
-            <tr>
-                <td>{{ presupuesto.proveedor }}</td>
-                <td>{{ presupuesto.producto_nombre }}</td>
-                <td>${{ "{:,.2f}".format(presupuesto.precio) }} {{ presupuesto.moneda }}</td>
-                <td>{{ presupuesto.fecha }}</td>
-                <td>{{ presupuesto.centro_costo }}</td>
-                <td>
-                    {% if presupuesto.pdf_path %}
-                    <a href="{{ url_for('uploaded_file', filename=presupuesto.pdf_path) }}" target="_blank" class="btn-eliminar">Ver PDF</a>
-                    {% else %}
-                    No disponible
-                    {% endif %}
-                </td>
-                <td>
-                    <form action="{{ url_for('eliminar_presupuesto', presupuesto_id=presupuesto.id) }}" method="POST" style="display:inline;">
-                        <button type="submit" class="btn-eliminar">Eliminar</button>
-                    </form>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+<table>
+    <thead>
+        <tr>
+            <th>Proveedor</th>
+            <th>Producto</th>
+            <th>Precio</th>
+            <th>Fecha</th>
+            <th>Centro de Costos</th>
+            <th>Detalle</th> 
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for presupuesto in presupuestos %}
+        <tr>
+            <td>{{ presupuesto.proveedor }}</td>
+            <td>{{ presupuesto.producto_nombre }}</td>
+            <td>${{ "{:,.2f}".format(presupuesto.precio) }} {{ presupuesto.moneda }}</td>
+            <td>{{ presupuesto.fecha }}</td>
+            <td>{{ presupuesto.centro_costo }}</td>
+            <td>
+                {% if presupuesto.pdf_path %}
+                <a href="{{ url_for('uploaded_file', filename=presupuesto.pdf_path) }}" target="_blank" class="btn-eliminar">Ver PDF</a>
+                {% else %}
+                No disponible
+                {% endif %}
+            </td>
+            <td>
+                <form action="{{ url_for('eliminar_presupuesto', presupuesto_id=presupuesto.id) }}" method="POST">
+                    <button type="submit" class="btn-eliminar">Eliminar</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
     
 </body>
 </html>

@@ -72,7 +72,7 @@
                 <td>{{ proveedor.ubicacion }}</td>
                 <td>{{ proveedor.descripcion }}</td>
                 <td>
-                    <form action="{{ url_for('eliminar_proveedor', proveedor_id=proveedor.id) }}" method="POST" style="display:inline;">
+                    <form action="{{ url_for('eliminar_proveedor', proveedor_id=proveedor.id) }}" method="POST">
                         <button type="submit" class="btn-eliminar">Eliminar</button>
                     </form>
                 </td>

@@ -141,7 +141,7 @@ select option:disabled {
     box-sizing: border-box;
 }
 
-search-form button {
+.search-form button {
     flex-shrink: 0; 
     padding: 10px 15px;
     font-size: 14px;
@@ -185,7 +185,17 @@ td {
 }
 
 /* Botón eliminar */
-button, .btn-eliminar {
+table td form {
+    margin: 0; /* Elimina márgenes del formulario */
+    display: flex; /* Asegura que el formulario se comporte como un contenedor flexible */
+    justify-content: center; /* Centra el botón horizontalmente */
+    align-items: center; /* Centra el botón verticalmente */
+    height: 100%; /* Asegura que el formulario ocupe toda la celda */
+    width: 100%; /* Asegura que el formulario ocupe todo el ancho de la celda */
+    box-sizing: border-box; /* Incluye padding y bordes en el tamaño total */
+}
+
+table td button, table td .btn-eliminar {
     background-color: #f9ca24;
     color: white;
     border: none;
@@ -194,10 +204,19 @@ button, .btn-eliminar {
     cursor: pointer;
     font-size: 14px;
     transition: background-color 0.3s ease;
+    display: inline-block; /* Asegura que el botón esté alineado correctamente */
+    text-align: center;
 }
 
-button:hover, .btn-eliminar:hover {
+table td button:hover, table td .btn-eliminar:hover {
     background-color: #d1a054;
+}
+
+table td {
+    vertical-align: middle; /* Asegura que el contenido de la celda esté centrado verticalmente */
+    text-align: center; /* Centra el contenido horizontalmente */
+    padding: 10px; /* Agrega un espacio uniforme dentro de la celda */
+    box-sizing: border-box; /* Incluye padding y bordes en el tamaño total */
 }
 
 /* Diseño Responsive */

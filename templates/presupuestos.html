@@ -61,8 +61,8 @@
     
     <h2>Buscar Presupuestos</h2>
     <form action="{{ url_for('presupuestos') }}" method="GET" class="search-form">
-    <input type="text" name="search" placeholder="Buscar por proveedor o producto" value="{{ search_query }}" required>
-    <button type="submit">Buscar</button>
+        <input type="text" name="search" placeholder="Buscar por proveedor o producto" value="{{ search_query }}" autofocus>
+        <button type="submit">Buscar</button>
     </form>
 
     <h2>Lista de Presupuestos</h2>

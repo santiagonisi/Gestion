@@ -45,7 +45,7 @@
     
     <h2>Buscar Proveedor</h2>
     <form method="GET" action="{{ url_for('proveedores') }}">
-        <input type="text" name="search" placeholder="Buscar proveedores..." value="{{ search_query }}">
+        <input type="text" name="search" placeholder="Buscar proveedores..." value="{{ search_query }}" autofocus>
         <button type="submit">Buscar</button>
     </form>
 

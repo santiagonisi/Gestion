@@ -186,13 +186,13 @@ td {
 
 /* Botón eliminar */
 table td form {
-    margin: 0; /* Elimina márgenes del formulario */
-    display: flex; /* Asegura que el formulario se comporte como un contenedor flexible */
-    justify-content: center; /* Centra el botón horizontalmente */
-    align-items: center; /* Centra el botón verticalmente */
-    height: 100%; /* Asegura que el formulario ocupe toda la celda */
-    width: 100%; /* Asegura que el formulario ocupe todo el ancho de la celda */
-    box-sizing: border-box; /* Incluye padding y bordes en el tamaño total */
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 table td button, table td .btn-eliminar {
@@ -204,7 +204,7 @@ table td button, table td .btn-eliminar {
     cursor: pointer;
     font-size: 14px;
     transition: background-color 0.3s ease;
-    display: inline-block; /* Asegura que el botón esté alineado correctamente */
+    display: inline-block;
     text-align: center;
 }
 
@@ -213,10 +213,10 @@ table td button:hover, table td .btn-eliminar:hover {
 }
 
 table td {
-    vertical-align: middle; /* Asegura que el contenido de la celda esté centrado verticalmente */
-    text-align: center; /* Centra el contenido horizontalmente */
-    padding: 10px; /* Agrega un espacio uniforme dentro de la celda */
-    box-sizing: border-box; /* Incluye padding y bordes en el tamaño total */
+    vertical-align: middle;
+    text-align: center;
+    padding: 10px;
+    box-sizing: border-box;
 }
 
 /* Diseño Responsive */

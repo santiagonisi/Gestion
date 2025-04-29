@@ -166,8 +166,8 @@ def presupuestos():
     # Mostrar en tabla los presupuestos
     presupuestos = cursor.fetchall()
     
-    # Menú desplegable de proveedores
-    cursor.execute('SELECT id, razonsocial FROM proveedores')
+    # Menú desplegable de proveedores ordenado alfabéticamente
+    cursor.execute('SELECT id, razonsocial FROM proveedores ORDER BY razonsocial ASC')
     proveedores = cursor.fetchall()
     
     # Menú desplegable de centros de costos

@@ -4,24 +4,24 @@ from flask import Flask, render_template, request, redirect, send_from_directory
 
 app = Flask(__name__)
 
-#configuracion carpeta uploads
+# Configuración carpeta uploads
 UPLOAD_FOLDER = 'uploads'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-#carpeta uploads
+# Carpeta uploads
 @app.route('/uploads/<path:filename>')
 def uploaded_file(filename):
     print(f"Intentando servir el archivo: {filename}")
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
-#base de datos
+# Base de datos
 def obtener_conexion():
     conn = sqlite3.connect('empresa.db', check_same_thread=False)
     conn.row_factory = sqlite3.Row  
     return conn
 
-#tablas
+# Tablas
 def crear_tablas():
     conn = obtener_conexion()
     cursor = conn.cursor()
@@ -87,7 +87,7 @@ def crear_tablas():
     conn.commit()
     conn.close()
 
-#centro de costos
+# Centro de costos
 def insertar_centros_costos():
     conn = obtener_conexion()
     cursor = conn.cursor()
@@ -112,7 +112,7 @@ def insertar_centros_costos():
     conn.commit()
     conn.close()
 
-#presupuestos/paginaprincipal
+# Presupuestos/página principal
 @app.route('/')
 @app.route('/presupuestos', methods=['GET', 'POST'])
 def presupuestos():
@@ -177,7 +177,7 @@ def presupuestos():
     conn.close()
     return render_template('presupuestos.html', presupuestos=presupuestos, proveedores=proveedores, centros_costos=centros_costos, search_query=search_query)
 
-#proveedores
+# Proveedores
 @app.route('/proveedores', methods=['GET', 'POST'])
 def proveedores():
     conn = obtener_conexion()
@@ -201,7 +201,7 @@ def proveedores():
     cursor.execute('SELECT * FROM proveedores')
     proveedores = cursor.fetchall()
     
-    #filtro de búsqueda proveedores
+    # Filtro de búsqueda proveedores
     if search_query:
         cursor.execute('''
             SELECT * FROM proveedores
@@ -214,6 +214,36 @@ def proveedores():
     
     conn.close()
     return render_template('proveedores.html', proveedores=proveedores, search_query=search_query)
+
+@app.route('/editar_proveedor/<int:proveedor_id>', methods=['GET', 'POST'])
+def editar_proveedor(proveedor_id):
+    conn = obtener_conexion()
+    cursor = conn.cursor()
+
+    if request.method == 'POST':
+        # Actualizar la información del proveedor
+        razonsocial = request.form['razonsocial']
+        contacto = request.form['contacto']
+        cuit = request.form['cuit']
+        rubro = request.form['rubro']
+        ubicacion = request.form['ubicacion']
+        descripcion = request.form['descripcion']
+
+        cursor.execute('''
+            UPDATE proveedores
+            SET razonsocial = ?, contacto = ?, cuit = ?, rubro = ?, ubicacion = ?, descripcion = ?
+            WHERE id = ?
+        ''', (razonsocial, contacto, cuit, rubro, ubicacion, descripcion, proveedor_id))
+        conn.commit()
+        conn.close()
+        return redirect(url_for('proveedores'))
+
+    # Obtener la información del proveedor para editar
+    cursor.execute('SELECT * FROM proveedores WHERE id = ?', (proveedor_id,))
+    proveedor = cursor.fetchone()
+    conn.close()
+
+    return render_template('editar_proveedor.html', proveedor=proveedor)
 
 @app.route('/eliminar_proveedor/<int:proveedor_id>', methods=['POST'])
 def eliminar_proveedor(proveedor_id):

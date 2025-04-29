@@ -246,8 +246,8 @@ table td a.btn-pdf:hover {
 
 /* Botón editar */
 table td a.btn-editar {
-    background-color: #f9ca24;
-    color: black;
+    background-color: #28a745; /* Verde inicial */
+    color: white;
     border: none;
     width: 40px; /* Asegura que sea un cuadrado */
     height: 40px; /* Asegura que sea un cuadrado */
@@ -269,7 +269,7 @@ table td a.btn-editar::after {
 }
 
 table td a.btn-editar:hover {
-    background-color: #d1a054;
+    background-color: #218838; /* Verde más oscuro al pasar el cursor */
 }
 
 /* Diseño Responsive */

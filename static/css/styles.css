@@ -114,6 +114,10 @@ button:hover {
     background-color: #d1a054;
 }
 
+textarea {
+    font-family: 'Arial', sans-serif;
+}
+
 /* Formularios de búsqueda */
 .search-form {
     display: flex;

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Proveedor</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <header>
+        <img src="{{ url_for('static', filename='images/Logo-Iarsa.png') }}" alt="Logo de la Empresa" class="logo">
+        <div class="header-content">
+            <h1>Editar Proveedor</h1>
+            <nav>
+                <ul>
+                    <li><a href="{{ url_for('presupuestos') }}">Presupuestos</a></li>
+                    <li><a href="{{ url_for('proveedores') }}">Proveedores</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <h2>Editar Información del Proveedor</h2>
+    <form action="{{ url_for('editar_proveedor', proveedor_id=proveedor['id']) }}" method="POST">
+        <label for="razonsocial">Razón Social:</label>
+        <input type="text" name="razonsocial" value="{{ proveedor['razonsocial'] }}" required>
+
+        <label for="contacto">Contacto:</label>
+        <input type="text" name="contacto" value="{{ proveedor['contacto'] }}" required>
+
+        <label for="cuit">CUIT:</label>
+        <input type="text" name="cuit" value="{{ proveedor['cuit'] }}">
+
+        <label for="rubro">Rubro:</label>
+        <input type="text" name="rubro" value="{{ proveedor['rubro'] }}">
+
+        <label for="ubicacion">Ubicación:</label>
+        <input type="text" name="ubicacion" value="{{ proveedor['ubicacion'] }}">
+
+        <label for="descripcion">Descripción:</label>
+        <textarea name="descripcion" rows="4">{{ proveedor['descripcion'] }}</textarea>
+
+        <button type="submit">Guardar Cambios</button>
+    </form>
+</body>
+</html>

@@ -180,18 +180,18 @@ th {
 td {
     color: black;
     vertical-align: middle;
-    text-align: center; /* Centra horizontalmente */
-    padding: 0; /* Elimina cualquier padding extra */
+    text-align: center;
+    padding: 0;
 }
 
-/* Centrar el contenido de la celda "Acciones" */
+/* Acciones */
 table td form {
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 100%; /* Asegura que el formulario ocupe toda la altura de la celda */
-    margin: 0; /* Elimina márgenes adicionales */
-    padding: 0; /* Elimina padding adicional */
+    height: 100%;
+    margin: 0; 
+    padding: 0;
 }
 
 /* Botón eliminar */
@@ -199,9 +199,9 @@ table td button.btn-eliminar {
     background-color: red;
     color: white;
     border: none;
-    width: 40px; /* Asegura que sea un cuadrado */
-    height: 40px; /* Asegura que sea un cuadrado */
-    border-radius: 0; /* Asegura que no tenga bordes redondeados */
+    width: 40px;
+    height: 40px;
+    border-radius: 0;
     cursor: pointer;
     font-size: 16px;
     font-weight: bold;
@@ -209,35 +209,19 @@ table td button.btn-eliminar {
     display: flex;
     align-items: center;
     justify-content: center;
-    margin: 0; /* Elimina márgenes adicionales */
-    outline: none; /* Elimina el recuadro blanco al hacer clic */
-    box-shadow: none; /* Elimina cualquier sombra */
+    margin: 0;
+    outline: none; 
+    box-shadow: none; 
 }
 
 table td button.btn-eliminar::after {
-    content: '✖'; /* Cruz */
+    content: '✖';
     font-size: 16px;
-    color: white; /* Asegura que la cruz sea blanca */
+    color: white; 
 }
 
 table td button.btn-eliminar:hover {
     background-color: darkred;
-}
-
-/* Botón PDF */
-table td a.btn-pdf {
-    background-color: yellow;
-    color: black;
-    border: none;
-    padding: 10px;
-    border-radius: 0; /* Cuadrado */
-    cursor: pointer;
-    font-size: 14px;
-    font-weight: bold;
-    text-decoration: none;
-    display: inline-block;
-    text-align: center;
-    transition: background-color 0.3s ease;
 }
 
 table td a.btn-pdf:hover {
@@ -246,12 +230,12 @@ table td a.btn-pdf:hover {
 
 /* Botón editar */
 table td a.btn-editar {
-    background-color: #28a745; /* Verde inicial */
+    background-color: #28a745; 
     color: white;
     border: none;
-    width: 40px; /* Asegura que sea un cuadrado */
-    height: 40px; /* Asegura que sea un cuadrado */
-    border-radius: 0; /* Cuadrado */
+    width: 40px; 
+    height: 40px; 
+    border-radius: 0; 
     cursor: pointer;
     font-size: 16px;
     font-weight: bold;
@@ -260,16 +244,16 @@ table td a.btn-editar {
     align-items: center;
     justify-content: center;
     transition: background-color 0.3s ease;
-    margin: 0 auto; /* Centra el botón dentro de la celda */
+    margin: 0 auto;
 }
 
 table td a.btn-editar::after {
-    content: '✎'; /* Lápiz */
+    content: '✎';
     font-size: 16px;
 }
 
 table td a.btn-editar:hover {
-    background-color: #218838; /* Verde más oscuro al pasar el cursor */
+    background-color: #218838;
 }
 
 /* Diseño Responsive */

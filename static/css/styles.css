@@ -3,19 +3,19 @@ body {
     margin: 0;
     padding: 0;
     background-color: white;
-    color: black; 
+    color: black;
     line-height: 1.6;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: flex-start; 
+    justify-content: flex-start;
     min-height: 100vh;
 }
 
 /* Header */
 header {
     width: 100%;
-    background: linear-gradient(90deg, #f9ca24, #d1a054); 
+    background: linear-gradient(90deg, #f9ca24, #d1a054);
     color: white;
     text-align: center;
     padding: 20px 10px;
@@ -23,14 +23,14 @@ header {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    margin: 0; 
-    box-sizing: border-box; 
+    margin: 0;
+    box-sizing: border-box;
 }
 
 header img.logo {
-    max-width: 150px; 
+    max-width: 150px;
     height: auto;
-    margin-bottom: 10px; 
+    margin-bottom: 10px;
 }
 
 header .header-content {
@@ -38,7 +38,7 @@ header .header-content {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 10px; 
+    gap: 10px;
     width: 100%;
 }
 
@@ -47,7 +47,7 @@ h1 {
     margin: 0;
     font-family: 'Arial', sans-serif;
     font-weight: bold;
-    color: white; 
+    color: white;
 }
 
 nav ul {
@@ -114,25 +114,19 @@ button:hover {
     background-color: #d1a054;
 }
 
-/* menús desplegables */
-select option:disabled {
-    color: #a9a9a9; 
-    font-style: italic;
-}
-
 /* Formularios de búsqueda */
 .search-form {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 10px; 
-    max-width: 600px; 
-    width: 100%; 
+    gap: 10px;
+    max-width: 600px;
+    width: 100%;
     margin: 20px auto;
 }
 
 .search-form input {
-    flex: 1; 
+    flex: 1;
     padding: 10px;
     font-size: 14px;
     border: 1px solid #ccc;
@@ -142,7 +136,7 @@ select option:disabled {
 }
 
 .search-form button {
-    flex-shrink: 0; 
+    flex-shrink: 0;
     padding: 10px 15px;
     font-size: 14px;
     border: none;
@@ -182,41 +176,96 @@ th {
 td {
     color: black;
     vertical-align: middle;
+    text-align: center; /* Centra horizontalmente */
+    padding: 0; /* Elimina cualquier padding extra */
+}
+
+/* Centrar el contenido de la celda "Acciones" */
+table td form {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%; /* Asegura que el formulario ocupe toda la altura de la celda */
+    margin: 0; /* Elimina márgenes adicionales */
+    padding: 0; /* Elimina padding adicional */
 }
 
 /* Botón eliminar */
-table td form {
-    margin: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100%;
-    width: 100%;
-    box-sizing: border-box;
-}
-
-table td button, table td .btn-eliminar {
-    background-color: #f9ca24;
+table td button.btn-eliminar {
+    background-color: red;
     color: white;
     border: none;
-    padding: 5px 10px;
-    border-radius: 5px;
+    width: 40px; /* Asegura que sea un cuadrado */
+    height: 40px; /* Asegura que sea un cuadrado */
+    border-radius: 0; /* Asegura que no tenga bordes redondeados */
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0; /* Elimina márgenes adicionales */
+    outline: none; /* Elimina el recuadro blanco al hacer clic */
+    box-shadow: none; /* Elimina cualquier sombra */
+}
+
+table td button.btn-eliminar::after {
+    content: '✖'; /* Cruz */
+    font-size: 16px;
+    color: white; /* Asegura que la cruz sea blanca */
+}
+
+table td button.btn-eliminar:hover {
+    background-color: darkred;
+}
+
+/* Botón PDF */
+table td a.btn-pdf {
+    background-color: yellow;
+    color: black;
+    border: none;
+    padding: 10px;
+    border-radius: 0; /* Cuadrado */
     cursor: pointer;
     font-size: 14px;
-    transition: background-color 0.3s ease;
+    font-weight: bold;
+    text-decoration: none;
     display: inline-block;
     text-align: center;
+    transition: background-color 0.3s ease;
 }
 
-table td button:hover, table td .btn-eliminar:hover {
+table td a.btn-pdf:hover {
+    background-color: gold;
+}
+
+/* Botón editar */
+table td a.btn-editar {
+    background-color: #f9ca24;
+    color: black;
+    border: none;
+    width: 40px; /* Asegura que sea un cuadrado */
+    height: 40px; /* Asegura que sea un cuadrado */
+    border-radius: 0; /* Cuadrado */
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s ease;
+    margin: 0 auto; /* Centra el botón dentro de la celda */
+}
+
+table td a.btn-editar::after {
+    content: '✎'; /* Lápiz */
+    font-size: 16px;
+}
+
+table td a.btn-editar:hover {
     background-color: #d1a054;
-}
-
-table td {
-    vertical-align: middle;
-    text-align: center;
-    padding: 10px;
-    box-sizing: border-box;
 }
 
 /* Diseño Responsive */
@@ -227,7 +276,7 @@ table td {
     }
 
     .search-form {
-        flex-direction: column; 
+        flex-direction: column;
         gap: 15px;
     }
 

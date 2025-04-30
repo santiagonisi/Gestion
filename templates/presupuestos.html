@@ -29,10 +29,16 @@
             {% endfor %}
         </select>
         
-        <label for="producto_nombre">Producto:</label>
-        <input type="text" name="producto_nombre" required>
+        <label for="productos">Productos:</label>
+        <div id="productos-container">
+            <div class="producto-item">
+                <input type="text" name="productos[]" placeholder="Nombre del producto" required>
+                <button type="button" class="btn-eliminar-producto" onclick="eliminarProducto(this)"></button>
+            </div>
+        </div>
+        <button type="button" id="btn-agregar-producto">Agregar Producto</button>
         
-        <label for="precio">Precio:</label>
+        <label for="precio">Precio Total:</label>
         <input type="text" name="precio" id="precio" required pattern="^\d+([.,]\d{1,2})?$" title="Ingrese un número válido con hasta 2 decimales (use ',' o '.')" placeholder="Ej: 1234,56">
         
         <label for="moneda">Moneda:</label>
@@ -41,7 +47,10 @@
             <option value="ARS">ARS (Pesos Argentinos)</option>
             <option value="USD">USD (Dólares)</option>
         </select>
-    
+        
+        <label for="cotizacion_dolar">Cotización del Dólar:</label>
+        <input type="text" name="cotizacion_dolar" id="cotizacion_dolar" pattern="^\d+([.,]\d{1,2})?$" title="Ingrese un número válido con hasta 2 decimales (use ',' o '.')" placeholder="Ej: 350,50">
+        
         <label for="fecha">Fecha:</label>
         <input type="date" name="fecha" required>
         
@@ -66,42 +75,63 @@
     </form>
 
     <h2>Lista de Presupuestos</h2>
-<table>
-    <thead>
-        <tr>
-            <th>Proveedor</th>
-            <th>Producto</th>
-            <th>Precio + IVA</th>
-            <th>Fecha</th>
-            <th>Centro de Costos</th>
-            <th>Detalle</th> 
-            <th>Acciones</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for presupuesto in presupuestos %}
-        <tr>
-            <td>{{ presupuesto.proveedor }}</td>
-            <td>{{ presupuesto.producto_nombre }}</td>
-            <td>${{ "{:,.2f}".format(presupuesto.precio) }} {{ presupuesto.moneda }}</td>
-            <td>{{ presupuesto.fecha }}</td>
-            <td>{{ presupuesto.centro_costo }}</td>
-            <td>
-                {% if presupuesto.pdf_path %}
-                <a href="{{ url_for('uploaded_file', filename=presupuesto.pdf_path) }}" target="_blank" class="btn-eliminar">Ver PDF</a>
-                {% else %}
-                No disponible
-                {% endif %}
-            </td>
-            <td>
-                <form action="{{ url_for('eliminar_presupuesto', presupuesto_id=presupuesto.id) }}" method="POST">
-                    <button type="submit" class="btn-eliminar"></button>
-                </form>
-            </td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
-    
+    <table>
+        <thead>
+            <tr>
+                <th>Proveedor</th>
+                <th>Producto</th>
+                <th>Precio + IVA</th>
+                <th>Fecha</th>
+                <th>Centro de Costos</th>
+                <th>Cotización del Dólar</th>
+                <th>Detalle</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for presupuesto in presupuestos %}
+            <tr>
+                <td>{{ presupuesto.proveedor }}</td>
+                <td>{{ presupuesto.producto_nombre }}</td>
+                <td>${{ "{:,.2f}".format(presupuesto.precio) }} {{ presupuesto.moneda }}</td>
+                <td>{{ presupuesto.fecha }}</td>
+                <td>{{ presupuesto.centro_costo }}</td>
+                <td>${{ "{:,.2f}".format(presupuesto.cotizacion_dolar) }}</td>
+                <td>
+                    {% if presupuesto.pdf_path %}
+                    <a href="{{ url_for('uploaded_file', filename=presupuesto.pdf_path) }}" target="_blank">Ver PDF</a>
+                    {% else %}
+                    No disponible
+                    {% endif %}
+                </td>
+                <td>
+                    <form action="{{ url_for('eliminar_presupuesto', presupuesto_id=presupuesto.id) }}" method="POST">
+                        <button type="submit" class="btn-eliminar">Eliminar</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <script>
+        // Agregar un nuevo campo de producto
+        document.getElementById('btn-agregar-producto').addEventListener('click', function() {
+            const container = document.getElementById('productos-container');
+            const div = document.createElement('div');
+            div.classList.add('producto-item');
+            div.innerHTML = `
+                <input type="text" name="productos[]" placeholder="Nombre del producto" required>
+                <button type="button" class="btn-eliminar-producto" onclick="eliminarProducto(this)"></button>
+            `;
+            container.appendChild(div);
+        });
+
+        // Eliminar un campo de producto
+        function eliminarProducto(button) {
+            const container = document.getElementById('productos-container');
+            container.removeChild(button.parentElement);
+        }
+    </script>
 </body>
 </html>

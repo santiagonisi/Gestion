@@ -118,6 +118,64 @@ textarea {
     font-family: 'Arial', sans-serif;
 }
 
+/* Contenedor de productos */
+#productos-container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px; /* Espacio entre cada fila de producto */
+    margin-bottom: 20px;
+}
+
+/* Estilo para cada producto */
+.producto-item {
+    display: flex;
+    align-items: center; /* Alinear elementos horizontalmente */
+    gap: 10px; /* Espacio entre el campo de texto y el botón */
+}
+
+/* Campo de texto del producto */
+.producto-item input[type="text"] {
+    flex: 1; /* Hacer que el campo de texto ocupe todo el espacio disponible */
+    height: 40px; /* Altura del campo de texto */
+    padding: 10px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+    box-sizing: border-box;
+}
+
+/* Botón eliminar producto */
+.btn-eliminar-producto {
+    background-color: red;
+    color: white;
+    border: none;
+    width: 40px; /* Tamaño cuadrado */
+    height: 40px; /* Tamaño cuadrado */
+    font-size: 16px; /* Tamaño de la cruz */
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    padding: 0; /* Sin relleno interno */
+}
+
+/* Agregar la cruz (✖) como contenido del botón */
+.btn-eliminar-producto::after {
+    content: '✖'; /* La cruz */
+    font-size: 18px; /* Tamaño de la cruz */
+    color: white;
+}
+
+/* Cambiar color al pasar el mouse */
+.btn-eliminar-producto:hover {
+    background-color: darkred;
+}
+
 /* Formularios de búsqueda */
 .search-form {
     display: flex;

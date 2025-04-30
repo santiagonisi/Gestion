@@ -12,7 +12,6 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 # Carpeta uploads
 @app.route('/uploads/<path:filename>')
 def uploaded_file(filename):
-    print(f"Intentando servir el archivo: {filename}")
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
 # Base de datos
@@ -47,30 +46,6 @@ def crear_tablas():
     ''')
 
     cursor.execute('''
-    CREATE TABLE IF NOT EXISTS productos (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        nombre TEXT NOT NULL UNIQUE,
-        categoria TEXT,
-        cantidad INTEGER DEFAULT 0
-    )
-    ''')
-
-    cursor.execute('''
-    CREATE TABLE IF NOT EXISTS proveedores_productos (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        proveedor_id INTEGER NOT NULL,
-        producto_id INTEGER NOT NULL,
-        precio REAL NOT NULL,
-        fecha TEXT NOT NULL,
-        centro_costo_id INTEGER NOT NULL,
-        pdf_path TEXT,
-        FOREIGN KEY (proveedor_id) REFERENCES proveedores(id),
-        FOREIGN KEY (producto_id) REFERENCES productos(id),
-        FOREIGN KEY (centro_costo_id) REFERENCES centros_costos(id)
-    )
-    ''')
-    
-    cursor.execute('''
     CREATE TABLE IF NOT EXISTS presupuestos (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         proveedor_id INTEGER NOT NULL,
@@ -80,10 +55,22 @@ def crear_tablas():
         fecha DATE NOT NULL,
         centro_costo_id TEXT NOT NULL,
         pdf_path TEXT,
+        cotizacion_dolar REAL,
         FOREIGN KEY (proveedor_id) REFERENCES proveedores (id)
     )
     ''')
-    
+
+    conn.commit()
+    conn.close()
+
+# Migración para agregar columna cotización del dólar
+def agregar_columna_cotizacion_dolar():
+    conn = obtener_conexion()
+    cursor = conn.cursor()
+    try:
+        cursor.execute("ALTER TABLE presupuestos ADD COLUMN cotizacion_dolar REAL")
+    except sqlite3.OperationalError:
+        pass  # La columna ya existe
     conn.commit()
     conn.close()
 
@@ -122,51 +109,47 @@ def presupuestos():
     search_query = request.args.get('search', '').strip()
     
     if request.method == 'POST':
-        # Datos del formulario
         proveedor_id = request.form['proveedor_id']
-        producto_nombre = request.form['producto_nombre']
-        precio = request.form['precio'].replace(',', '.')
+        productos = request.form.getlist('productos[]')  # Lista de productos
+        precio = float(request.form['precio'].replace(',', '.'))
         moneda = request.form['moneda']
         fecha = request.form['fecha']
         centro_costo_id = request.form['centro_costo_id']
         
-        # PDF
-        archivo_pdf = request.files.get('archivo_pdf')
-        pdf_path = None
-        if archivo_pdf:
-            filename = f"{producto_nombre}_{archivo_pdf.filename}"
-            filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-            archivo_pdf.save(filepath)
-            pdf_path = filename 
+        # Manejar el campo cotizacion_dolar
+        cotizacion_dolar = request.form.get('cotizacion_dolar', '').strip()
+        if cotizacion_dolar:  # Si el campo no está vacío
+            cotizacion_dolar = float(cotizacion_dolar.replace(',', '.'))
+        else:
+            cotizacion_dolar = None  # O un valor predeterminado, como 0.0
         
-        # Insertar el presupuesto en la tabla presupuestos
-        cursor.execute('''
-            INSERT INTO presupuestos (proveedor_id, producto_nombre, precio, moneda, fecha, centro_costo_id, pdf_path)
-            VALUES (?, ?, ?, ?, ?, ?, ?)
-        ''', (proveedor_id, producto_nombre, precio, moneda, fecha, centro_costo_id, pdf_path))
+        pdf_file = request.files['archivo_pdf']
+
+        pdf_path = None
+        if pdf_file:
+            pdf_filename = pdf_file.filename
+            pdf_path = os.path.join(app.config['UPLOAD_FOLDER'], pdf_filename)
+            pdf_file.save(pdf_path)
+
+        # Guardar cada producto como un registro separado
+        for producto in productos:
+            cursor.execute('''
+                INSERT INTO presupuestos (proveedor_id, producto_nombre, precio, moneda, fecha, centro_costo_id, pdf_path, cotizacion_dolar)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            ''', (proveedor_id, producto, precio, moneda, fecha, centro_costo_id, pdf_path, cotizacion_dolar))
+        
         conn.commit()
     
-    # Filtro de búsqueda presupuestos
-    if search_query:
-        cursor.execute('''
-            SELECT pr.id, p.razonsocial AS proveedor, pr.producto_nombre, pr.precio, pr.moneda, pr.fecha, cc.nombre AS centro_costo, pr.pdf_path
-            FROM presupuestos pr
-            JOIN proveedores p ON pr.proveedor_id = p.id
-            JOIN centros_costos cc ON pr.centro_costo_id = cc.id
-            WHERE p.razonsocial LIKE ? OR pr.producto_nombre LIKE ?
-        ''', (f'%{search_query}%', f'%{search_query}%'))
-    else:
-        cursor.execute('''
-            SELECT pr.id, p.razonsocial AS proveedor, pr.producto_nombre, pr.precio, pr.moneda, pr.fecha, cc.nombre AS centro_costo, pr.pdf_path
-            FROM presupuestos pr
-            JOIN proveedores p ON pr.proveedor_id = p.id
-            JOIN centros_costos cc ON pr.centro_costo_id = cc.id
-        ''')
-    
-    # Mostrar en tabla los presupuestos
+    # Consulta para mostrar presupuestos
+    cursor.execute('''
+        SELECT pr.id, p.razonsocial AS proveedor, pr.producto_nombre, pr.precio, pr.moneda, pr.fecha, cc.nombre AS centro_costo, pr.pdf_path, pr.cotizacion_dolar
+        FROM presupuestos pr
+        JOIN proveedores p ON pr.proveedor_id = p.id
+        JOIN centros_costos cc ON pr.centro_costo_id = cc.id
+    ''')
     presupuestos = cursor.fetchall()
     
-    # Menú desplegable de proveedores ordenado alfabéticamente
+    # Menú desplegable de proveedores
     cursor.execute('SELECT id, razonsocial FROM proveedores ORDER BY razonsocial ASC')
     proveedores = cursor.fetchall()
     
@@ -198,10 +181,6 @@ def proveedores():
         conn.commit()
         return redirect(url_for('proveedores'))
     
-    cursor.execute('SELECT * FROM proveedores')
-    proveedores = cursor.fetchall()
-    
-    # Filtro de búsqueda proveedores
     if search_query:
         cursor.execute('''
             SELECT * FROM proveedores
@@ -211,7 +190,6 @@ def proveedores():
         cursor.execute('SELECT * FROM proveedores')
     
     proveedores = cursor.fetchall()
-    
     conn.close()
     return render_template('proveedores.html', proveedores=proveedores, search_query=search_query)
 
@@ -221,7 +199,6 @@ def editar_proveedor(proveedor_id):
     cursor = conn.cursor()
 
     if request.method == 'POST':
-        # Actualizar la información del proveedor
         razonsocial = request.form['razonsocial']
         contacto = request.form['contacto']
         cuit = request.form['cuit']
@@ -238,7 +215,6 @@ def editar_proveedor(proveedor_id):
         conn.close()
         return redirect(url_for('proveedores'))
 
-    # Obtener la información del proveedor para editar
     cursor.execute('SELECT * FROM proveedores WHERE id = ?', (proveedor_id,))
     proveedor = cursor.fetchone()
     conn.close()
@@ -265,5 +241,6 @@ def eliminar_presupuesto(presupuesto_id):
 
 if __name__ == '__main__':
     crear_tablas()
+    agregar_columna_cotizacion_dolar()
     insertar_centros_costos()
     app.run(debug=True)

@@ -110,29 +110,35 @@ def presupuestos():
     
     if request.method == 'POST':
         proveedor_id = request.form['proveedor_id']
-        productos = request.form.getlist('productos[]')  # Lista de productos
-        precio = float(request.form['precio'].replace(',', '.'))
+        productos_texto = request.form.get('productos', '')  # Texto con productos separados por comas
+        precios_texto = request.form.get('precios_productos', '')  # Texto con precios separados por comas
+        productos = [producto.strip() for producto in productos_texto.split(',') if producto.strip()]  # Convertir a lista y eliminar espacios en blanco
+        precios = [float(precio.strip().replace(',', '.')) for precio in precios_texto.split(',') if precio.strip()]  # Convertir a lista de precios
+        
+        # Validar que la cantidad de productos coincida con la cantidad de precios
+        if len(productos) != len(precios):
+            return "La cantidad de productos no coincide con la cantidad de precios", 400
+        
+        precio_total = float(request.form['precio'].replace(',', '.'))
         moneda = request.form['moneda']
         fecha = request.form['fecha']
         centro_costo_id = request.form['centro_costo_id']
         
-        # Manejar el campo cotizacion_dolar
         cotizacion_dolar = request.form.get('cotizacion_dolar', '').strip()
-        if cotizacion_dolar:  # Si el campo no está vacío
+        if cotizacion_dolar:
             cotizacion_dolar = float(cotizacion_dolar.replace(',', '.'))
         else:
-            cotizacion_dolar = None  # O un valor predeterminado, como 0.0
+            cotizacion_dolar = None
         
         pdf_file = request.files['archivo_pdf']
-
         pdf_path = None
         if pdf_file:
             pdf_filename = pdf_file.filename
             pdf_path = os.path.join(app.config['UPLOAD_FOLDER'], pdf_filename)
             pdf_file.save(pdf_path)
 
-        # Guardar cada producto como un registro separado
-        for producto in productos:
+        # Guardar cada producto con su precio como un registro separado
+        for producto, precio in zip(productos, precios):
             cursor.execute('''
                 INSERT INTO presupuestos (proveedor_id, producto_nombre, precio, moneda, fecha, centro_costo_id, pdf_path, cotizacion_dolar)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)
@@ -140,25 +146,46 @@ def presupuestos():
         
         conn.commit()
     
-    # Consulta para mostrar presupuestos
+    # Consulta para mostrar presupuestos agrupados
     cursor.execute('''
-        SELECT pr.id, p.razonsocial AS proveedor, pr.producto_nombre, pr.precio, pr.moneda, pr.fecha, cc.nombre AS centro_costo, pr.pdf_path, pr.cotizacion_dolar
+        SELECT pr.id, p.razonsocial AS proveedor, GROUP_CONCAT(pr.producto_nombre) AS productos,
+               GROUP_CONCAT(pr.precio) AS precios, pr.moneda, pr.fecha, cc.nombre AS centro_costo, pr.pdf_path,
+               COALESCE(pr.cotizacion_dolar, 0.0) AS cotizacion_dolar
         FROM presupuestos pr
         JOIN proveedores p ON pr.proveedor_id = p.id
         JOIN centros_costos cc ON pr.centro_costo_id = cc.id
+        GROUP BY pr.id, p.razonsocial, pr.moneda, pr.fecha, cc.nombre, pr.pdf_path, pr.cotizacion_dolar
     ''')
     presupuestos = cursor.fetchall()
-    
-    # Menú desplegable de proveedores
+
+    # Procesar productos y precios como listas
+    presupuestos_procesados = []
+    for presupuesto in presupuestos:
+        productos = presupuesto['productos'].split(',') if presupuesto['productos'] else []
+        precios = [float(precio) for precio in presupuesto['precios'].split(',')] if presupuesto['precios'] else []
+        presupuestos_procesados.append({
+            'id': presupuesto['id'],
+            'proveedor': presupuesto['proveedor'],
+            'productos': productos,
+            'precios': precios,
+            'precio_total': sum(precios),  # Calcular el precio total
+            'moneda': presupuesto['moneda'],
+            'fecha': presupuesto['fecha'],
+            'centro_costo': presupuesto['centro_costo'],
+            'cotizacion_dolar': presupuesto['cotizacion_dolar'],
+            'pdf_path': presupuesto['pdf_path']
+        })
+
+    # Obtener proveedores para el formulario
     cursor.execute('SELECT id, razonsocial FROM proveedores ORDER BY razonsocial ASC')
     proveedores = cursor.fetchall()
-    
-    # Menú desplegable de centros de costos
+
+    # Obtener centros de costos para el formulario
     cursor.execute('SELECT id, nombre FROM centros_costos')
     centros_costos = cursor.fetchall()
-    
+
     conn.close()
-    return render_template('presupuestos.html', presupuestos=presupuestos, proveedores=proveedores, centros_costos=centros_costos, search_query=search_query)
+    return render_template('presupuestos.html', presupuestos=presupuestos_procesados, proveedores=proveedores, centros_costos=centros_costos, search_query=search_query)
 
 # Proveedores
 @app.route('/proveedores', methods=['GET', 'POST'])

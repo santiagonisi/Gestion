@@ -29,14 +29,11 @@
             {% endfor %}
         </select>
         
-        <label for="productos">Productos:</label>
-        <div id="productos-container">
-            <div class="producto-item">
-                <input type="text" name="productos[]" placeholder="Nombre del producto" required>
-                <button type="button" class="btn-eliminar-producto" onclick="eliminarProducto(this)"></button>
-            </div>
-        </div>
-        <button type="button" id="btn-agregar-producto">Agregar Producto</button>
+        <label for="productos">Productos (separados por comas):</label>
+        <textarea name="productos" id="productos" rows="3" placeholder="Ejemplo: Producto 1, Producto 2, Producto 3"></textarea>
+        
+        <label for="precios_productos">Precios por Producto (separados por comas):</label>
+        <textarea name="precios_productos" id="precios_productos" rows="3" placeholder="Ejemplo: 100, 200, 300"></textarea>
         
         <label for="precio">Precio Total:</label>
         <input type="text" name="precio" id="precio" required pattern="^\d+([.,]\d{1,2})?$" title="Ingrese un número válido con hasta 2 decimales (use ',' o '.')" placeholder="Ej: 1234,56">
@@ -79,8 +76,9 @@
         <thead>
             <tr>
                 <th>Proveedor</th>
-                <th>Producto</th>
-                <th>Precio + IVA</th>
+                <th>Productos</th>
+                <th>Precios por Producto</th>
+                <th>Precio Total</th>
                 <th>Fecha</th>
                 <th>Centro de Costos</th>
                 <th>Cotización del Dólar</th>
@@ -92,11 +90,30 @@
             {% for presupuesto in presupuestos %}
             <tr>
                 <td>{{ presupuesto.proveedor }}</td>
-                <td>{{ presupuesto.producto_nombre }}</td>
-                <td>${{ "{:,.2f}".format(presupuesto.precio) }} {{ presupuesto.moneda }}</td>
+                <td>
+                    <ul>
+                        {% for producto in presupuesto.productos %}
+                        <li>{{ producto }}</li>
+                        {% endfor %}
+                    </ul>
+                </td>
+                <td>
+                    <ul>
+                        {% for precio in presupuesto.precios %}
+                        <li>${{ "{:,.2f}".format(precio) }} {{ presupuesto.moneda }}</li>
+                        {% endfor %}
+                    </ul>
+                </td>
+                <td>${{ "{:,.2f}".format(presupuesto.precio_total) }} {{ presupuesto.moneda }}</td>
                 <td>{{ presupuesto.fecha }}</td>
                 <td>{{ presupuesto.centro_costo }}</td>
-                <td>${{ "{:,.2f}".format(presupuesto.cotizacion_dolar) }}</td>
+                <td>
+                    {% if presupuesto.cotizacion_dolar %}
+                        ${{ "{:,.2f}".format(presupuesto.cotizacion_dolar) }}
+                    {% else %}
+                        N/A
+                    {% endif %}
+                </td>
                 <td>
                     {% if presupuesto.pdf_path %}
                     <a href="{{ url_for('uploaded_file', filename=presupuesto.pdf_path) }}" target="_blank">Ver PDF</a>
@@ -113,25 +130,5 @@
             {% endfor %}
         </tbody>
     </table>
-
-    <script>
-        // Agregar un nuevo campo de producto
-        document.getElementById('btn-agregar-producto').addEventListener('click', function() {
-            const container = document.getElementById('productos-container');
-            const div = document.createElement('div');
-            div.classList.add('producto-item');
-            div.innerHTML = `
-                <input type="text" name="productos[]" placeholder="Nombre del producto" required>
-                <button type="button" class="btn-eliminar-producto" onclick="eliminarProducto(this)"></button>
-            `;
-            container.appendChild(div);
-        });
-
-        // Eliminar un campo de producto
-        function eliminarProducto(button) {
-            const container = document.getElementById('productos-container');
-            container.removeChild(button.parentElement);
-        }
-    </script>
 </body>
 </html>

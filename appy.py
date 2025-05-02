@@ -56,6 +56,7 @@ def crear_tablas():
         centro_costo_id TEXT NOT NULL,
         pdf_path TEXT,
         cotizacion_dolar REAL,
+        precio_total REAL DEFAULT 0.0,
         FOREIGN KEY (proveedor_id) REFERENCES proveedores (id)
     )
     ''')
@@ -63,12 +64,16 @@ def crear_tablas():
     conn.commit()
     conn.close()
 
-# Migración para agregar columna cotización del dólar
-def agregar_columna_cotizacion_dolar():
+# Migración para agregar columna cotización del dólar y precio total
+def agregar_columnas():
     conn = obtener_conexion()
     cursor = conn.cursor()
     try:
         cursor.execute("ALTER TABLE presupuestos ADD COLUMN cotizacion_dolar REAL")
+    except sqlite3.OperationalError:
+        pass  # La columna ya existe
+    try:
+        cursor.execute("ALTER TABLE presupuestos ADD COLUMN precio_total REAL DEFAULT 0.0")
     except sqlite3.OperationalError:
         pass  # La columna ya existe
     conn.commit()
@@ -106,7 +111,7 @@ def presupuestos():
     conn = obtener_conexion()
     cursor = conn.cursor()
     
-    search_query = request.args.get('search', '').strip()
+    search_query = request.args.get('search', '').strip()  # Obtener el término de búsqueda
     
     if request.method == 'POST':
         proveedor_id = request.form['proveedor_id']
@@ -119,7 +124,7 @@ def presupuestos():
         if len(productos) != len(precios):
             return "La cantidad de productos no coincide con la cantidad de precios", 400
         
-        precio_total = float(request.form['precio'].replace(',', '.'))
+        precio_total = float(request.form['precio'].replace(',', '.'))  # Usar el precio total ingresado
         moneda = request.form['moneda']
         fecha = request.form['fecha']
         centro_costo_id = request.form['centro_costo_id']
@@ -140,22 +145,35 @@ def presupuestos():
         # Guardar cada producto con su precio como un registro separado
         for producto, precio in zip(productos, precios):
             cursor.execute('''
-                INSERT INTO presupuestos (proveedor_id, producto_nombre, precio, moneda, fecha, centro_costo_id, pdf_path, cotizacion_dolar)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-            ''', (proveedor_id, producto, precio, moneda, fecha, centro_costo_id, pdf_path, cotizacion_dolar))
+                INSERT INTO presupuestos (proveedor_id, producto_nombre, precio, moneda, fecha, centro_costo_id, pdf_path, cotizacion_dolar, precio_total)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ''', (proveedor_id, producto, precio, moneda, fecha, centro_costo_id, pdf_path, cotizacion_dolar, precio_total))
         
         conn.commit()
     
     # Consulta para mostrar presupuestos agrupados
-    cursor.execute('''
-        SELECT pr.id, p.razonsocial AS proveedor, GROUP_CONCAT(pr.producto_nombre) AS productos,
-               GROUP_CONCAT(pr.precio) AS precios, pr.moneda, pr.fecha, cc.nombre AS centro_costo, pr.pdf_path,
-               COALESCE(pr.cotizacion_dolar, 0.0) AS cotizacion_dolar
-        FROM presupuestos pr
-        JOIN proveedores p ON pr.proveedor_id = p.id
-        JOIN centros_costos cc ON pr.centro_costo_id = cc.id
-        GROUP BY pr.id, p.razonsocial, pr.moneda, pr.fecha, cc.nombre, pr.pdf_path, pr.cotizacion_dolar
-    ''')
+    if search_query:  # Si hay un término de búsqueda
+        cursor.execute('''
+            SELECT pr.id, p.razonsocial AS proveedor, GROUP_CONCAT(pr.producto_nombre) AS productos,
+                   GROUP_CONCAT(pr.precio) AS precios, pr.moneda, pr.fecha, cc.nombre AS centro_costo, pr.pdf_path,
+                   COALESCE(pr.cotizacion_dolar, 0.0) AS cotizacion_dolar, MAX(pr.precio_total) AS precio_total
+            FROM presupuestos pr
+            JOIN proveedores p ON pr.proveedor_id = p.id
+            JOIN centros_costos cc ON pr.centro_costo_id = cc.id
+            WHERE p.razonsocial LIKE ? OR pr.producto_nombre LIKE ?
+            GROUP BY pr.id, p.razonsocial, pr.moneda, pr.fecha, cc.nombre, pr.pdf_path, pr.cotizacion_dolar
+        ''', (f'%{search_query}%', f'%{search_query}%'))
+    else:  # Si no hay término de búsqueda, mostrar todos los presupuestos
+        cursor.execute('''
+            SELECT pr.id, p.razonsocial AS proveedor, GROUP_CONCAT(pr.producto_nombre) AS productos,
+                   GROUP_CONCAT(pr.precio) AS precios, pr.moneda, pr.fecha, cc.nombre AS centro_costo, pr.pdf_path,
+                   COALESCE(pr.cotizacion_dolar, 0.0) AS cotizacion_dolar, MAX(pr.precio_total) AS precio_total
+            FROM presupuestos pr
+            JOIN proveedores p ON pr.proveedor_id = p.id
+            JOIN centros_costos cc ON pr.centro_costo_id = cc.id
+            GROUP BY pr.id, p.razonsocial, pr.moneda, pr.fecha, cc.nombre, pr.pdf_path, pr.cotizacion_dolar
+        ''')
+    
     presupuestos = cursor.fetchall()
 
     # Procesar productos y precios como listas
@@ -168,7 +186,7 @@ def presupuestos():
             'proveedor': presupuesto['proveedor'],
             'productos': productos,
             'precios': precios,
-            'precio_total': sum(precios),  # Calcular el precio total
+            'precio_total': presupuesto['precio_total'] if presupuesto['precio_total'] is not None else 0.0,  # Asegurar valor predeterminado
             'moneda': presupuesto['moneda'],
             'fecha': presupuesto['fecha'],
             'centro_costo': presupuesto['centro_costo'],
@@ -193,7 +211,7 @@ def proveedores():
     conn = obtener_conexion()
     cursor = conn.cursor()
     
-    search_query = request.args.get('search', '').strip()
+    search_query = request.args.get('search', '').strip()  # Obtener el término de búsqueda
     
     if request.method == 'POST':
         razonsocial = request.form['razonsocial']
@@ -208,12 +226,12 @@ def proveedores():
         conn.commit()
         return redirect(url_for('proveedores'))
     
-    if search_query:
+    if search_query:  # Si hay un término de búsqueda
         cursor.execute('''
             SELECT * FROM proveedores
             WHERE razonsocial LIKE ? OR contacto LIKE ? OR cuit LIKE ? OR rubro LIKE ? OR ubicacion LIKE ? OR descripcion LIKE ?
         ''', (f'%{search_query}%', f'%{search_query}%', f'%{search_query}%', f'%{search_query}%', f'%{search_query}%', f'%{search_query}%'))
-    else:
+    else:  # Si no hay término de búsqueda, mostrar todos los proveedores
         cursor.execute('SELECT * FROM proveedores')
     
     proveedores = cursor.fetchall()
@@ -268,6 +286,6 @@ def eliminar_presupuesto(presupuesto_id):
 
 if __name__ == '__main__':
     crear_tablas()
-    agregar_columna_cotizacion_dolar()
+    agregar_columnas()
     insertar_centros_costos()
     app.run(debug=True)

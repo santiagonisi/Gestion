@@ -10,7 +10,7 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 # Carpeta uploads
-@app.route('/uploads/<path:filename>')
+@app.route('/uploads/<filename>')
 def uploaded_file(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
@@ -139,8 +139,8 @@ def presupuestos():
         pdf_path = None
         if pdf_file:
             pdf_filename = pdf_file.filename
-            pdf_path = os.path.join(app.config['UPLOAD_FOLDER'], pdf_filename)
-            pdf_file.save(pdf_path)
+            pdf_path = pdf_filename  # Solo guarda el nombre del archivo
+            pdf_file.save(os.path.join(app.config['UPLOAD_FOLDER'], pdf_filename))
 
         # Guardar cada producto con su precio como un registro separado
         for producto, precio in zip(productos, precios):

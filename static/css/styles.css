@@ -1,362 +1,185 @@
 body {
-    font-family: 'Arial', sans-serif;
+    background-color: #f8f9fa;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #212529;
     margin: 0;
     padding: 0;
-    background-color: white;
-    color: black;
-    line-height: 1.6;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
-    min-height: 100vh;
 }
 
-/* Header */
-header {
-    width: 100%;
-    background: linear-gradient(90deg, #f9ca24, #d1a054);
-    color: white;
-    text-align: center;
-    padding: 20px 10px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    margin: 0;
-    box-sizing: border-box;
+h1, h2, h3 {
+    color: #e6c028;
+    margin-bottom: 1rem;
 }
 
-header img.logo {
-    max-width: 150px;
-    height: auto;
-    margin-bottom: 10px;
-}
-
-header .header-content {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    width: 100%;
-}
-
-h1 {
-    font-size: 28px;
-    margin: 0;
-    font-family: 'Arial', sans-serif;
-    font-weight: bold;
-    color: white;
-}
-
-nav ul {
-    list-style: none;
-    padding: 0;
-    margin: 10px 0 0 0;
-    display: flex;
-    gap: 15px;
-    justify-content: center;
-}
-
-nav ul li a {
-    text-decoration: none;
-    color: white;
-    padding: 10px 15px;
-    font-weight: bold;
-}
-
-/* Formularios */
-form {
-    margin: 20px auto;
-    padding: 20px;
-    max-width: 600px;
-    width: 100%;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    background-color: white;
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
-
-label {
-    font-weight: bold;
-    margin-bottom: 5px;
-    font-size: 14px;
-}
-
-input, select, button, textarea {
-    width: 100%;
-    padding: 10px;
-    font-size: 14px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    background-color: #f9f9f9;
-    box-sizing: border-box;
-}
-
-input[type="file"] {
-    padding: 5px;
-}
-
-button {
-    background-color: #f9ca24;
-    color: white;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    margin-top: 10px;
-}
-
-button:hover {
-    background-color: #d1a054;
-}
-
-textarea {
-    font-family: 'Arial', sans-serif;
-}
-
-/* Contenedor de productos */
-#productos-container {
-    display: flex;
-    flex-direction: column;
-    gap: 15px; /* Espacio entre cada fila de producto */
-    margin-bottom: 20px;
-}
-
-/* Estilo para cada producto */
-.producto-item {
-    display: flex;
-    align-items: center; /* Alinear elementos horizontalmente */
-    gap: 10px; /* Espacio entre el campo de texto y el botón */
-}
-
-/* Campo de texto del producto */
-.producto-item input[type="text"] {
-    flex: 1; /* Hacer que el campo de texto ocupe todo el espacio disponible */
-    height: 40px; /* Altura del campo de texto */
-    padding: 10px;
-    font-size: 14px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    background-color: #f9f9f9;
-    box-sizing: border-box;
-}
-
-/* Botón eliminar producto */
-.btn-eliminar-producto {
-    background-color: red;
-    color: white;
-    border: none;
-    width: 40px; /* Tamaño cuadrado */
-    height: 40px; /* Tamaño cuadrado */
-    font-size: 16px; /* Tamaño de la cruz */
-    font-weight: bold;
-    cursor: pointer;
-    border-radius: 5px;
-    transition: background-color 0.3s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-sizing: border-box;
-    padding: 0; /* Sin relleno interno */
-}
-
-/* Agregar la cruz (✖) como contenido del botón */
-.btn-eliminar-producto::after {
-    content: '✖'; /* La cruz */
-    font-size: 18px; /* Tamaño de la cruz */
-    color: white;
-}
-
-/* Cambiar color al pasar el mouse */
-.btn-eliminar-producto:hover {
-    background-color: darkred;
-}
-
-/* Formularios de búsqueda */
-.search-form {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    max-width: 600px;
-    width: 100%;
-    margin: 20px auto;
-}
-
-.search-form input {
-    flex: 1;
-    padding: 10px;
-    font-size: 14px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    background-color: #f9f9f9;
-    box-sizing: border-box;
-}
-
-.search-form button {
-    flex-shrink: 0;
-    padding: 10px 15px;
-    font-size: 14px;
-    border: none;
-    border-radius: 5px;
-    background-color: #f9ca24;
-    color: white;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
-
-.search-form button:hover {
-    background-color: #d1a054;
-}
-
-/* Tabla */
-table {
-    width: 90%;
-    margin: 20px auto;
-    border-collapse: collapse;
-    background-color: white;
-    border: 1px solid #ccc;
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-    text-align: center;
-}
-
-th, td {
-    border: 1px solid #ccc;
-    padding: 10px;
-}
-
-th {
-    background-color: #f4f4f4;
-    font-weight: bold;
-}
-
-td {
-    color: black;
-    vertical-align: middle;
-    text-align: center;
-    padding: 0;
-}
-
-/* Acciones */
-table td form {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 100%;
-    margin: 0; 
-    padding: 0;
-}
-
-/* Botón eliminar */
-table td button.btn-eliminar {
-    background-color: red;
-    color: white;
-    border: none;
-    width: 40px;
-    height: 40px;
-    border-radius: 0;
-    cursor: pointer;
-    font-size: 16px;
-    font-weight: bold;
-    transition: background-color 0.3s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0;
-    outline: none; 
-    box-shadow: none; 
-}
-
-table td button.btn-eliminar::after {
-    content: '✖';
-    font-size: 16px;
-    color: white; 
-}
-
-table td button.btn-eliminar:hover {
-    background-color: darkred;
-}
-
-table td a.btn-pdf:hover {
-    background-color: gold;
-}
-
-/* Botón editar */
-table td a.btn-editar {
-    background-color: #28a745; 
-    color: white;
-    border: none;
-    width: 40px; 
-    height: 40px; 
-    border-radius: 0; 
-    cursor: pointer;
-    font-size: 16px;
-    font-weight: bold;
-    text-decoration: none;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background-color 0.3s ease;
+.container {
+    max-width: 1200px;
     margin: 0 auto;
+    padding: 1rem;
 }
 
-table td a.btn-editar::after {
-    content: '✎';
-    font-size: 16px;
+
+.navbar {
+    box-shadow: 0 4px 6px #e3c019;
 }
 
-table td a.btn-editar:hover {
-    background-color: #218838;
+.navbar-brand {
+    font-weight: bold;
+    letter-spacing: 1px;
 }
 
-/* Diseño Responsive */
-@media screen and (max-width: 768px) {
-    form {
-        width: 95%;
-        padding: 15px;
+.navbar-brand img {
+    width: 44px;
+    height: 44px;
+    object-fit: contain;
+    background: #fff;
+    border-radius: 8px;
+    padding: 2px;
+    margin-right: 10px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+}
+
+.navbar-toggler {
+    height: 44px;
+    width: 44px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.navbar-toggler-icon {
+    width: 32px;
+    height: 32px;
+}
+
+.section-title {
+    border-bottom: 3px solid #e6c028;
+    color: #e6c028;
+    padding-bottom: 0.25rem;
+    margin-bottom: 1rem;
+    font-weight: bold;
+    width: 100%;
+}
+
+
+.table {
+    width: 100%;
+    margin-bottom: 1.5rem;
+    border-collapse: collapse;
+    background-color: #f1f1f1;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.table thead th {
+    background-color: #e6c028;
+    font-weight: bold;
+    color: #212529;
+    text-align: center;
+    padding: 0.75rem;
+}
+
+.table th, .table td {
+    text-align: center;
+    vertical-align: middle;
+    padding: 0.75rem;
+    border-top: 1px solid #dee2e6;
+}
+
+.table-hover tbody tr:hover {
+    background-color: #fdf6d9;
+}
+
+
+form input, form select {
+    border-radius: 0.375rem;
+    border: 1px solid #ced4da;
+    padding: 0.5rem;
+    width: 100%;
+}
+
+form input:focus, form select:focus {
+    border-color: #e6c028;
+    box-shadow: 0 0 0 0.15rem rgba(230,192,40,0.4);
+    outline: none;
+}
+
+
+.btn {
+    border-radius: 0.375rem;
+    padding: 0.375rem 0.75rem;
+    font-size: 0.9rem;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+}
+
+
+.btn-primary {
+    background-color: #e6c028;
+    color: #000;
+    border: 1px solid #e6c028;
+}
+
+.btn-primary:hover,
+.btn-primary:focus {
+    background-color: #e6c028 !important;
+    color: #000 !important;
+    border-color: #e6c028;
+}
+
+
+.btn-secondary {
+    background-color: #6c757d;
+    color: #fff;
+}
+
+
+.btn-agregar-grande {
+    width: 100%;
+    font-size: 1.1rem;
+    padding: 0.75rem 0;
+    margin-top: 0.5rem;
+    background-color: #e6c028;
+    color: #000;
+}
+
+.btn-agregar-grande:hover,
+.btn-agregar-grande:focus {
+    background-color: #e6c028;
+    color: #000 !important;
+}
+
+
+.badge {
+    font-size: 0.85rem;
+    padding: 0.5em 0.75em;
+    border-radius: 0.375rem;
+    background-color: #e6c028;
+    color: #212529;
+}
+
+.pagination .page-item .page-link {
+    border-radius: 0.375rem;
+    color: #212529;
+    border: 1px solid #dee2e6;
+}
+
+.pagination .page-item.active .page-link {
+    background-color: #e6c028;
+    border-color: #e6c028;
+    color: #fff;
+}
+
+
+@media (max-width: 768px) {
+    .table th, .table td {
+        font-size: 0.85rem;
+        padding: 0.5rem;
     }
 
-    .search-form {
-        flex-direction: column;
-        gap: 15px;
-    }
-
-    .search-form input, .search-form button {
-        width: 100%;
-    }
-
-    table, thead, tbody, th, td, tr {
-        display: block;
-    }
-
-    tr {
-        margin-bottom: 10px;
-        border-bottom: 1px solid #ccc;
-        padding-bottom: 10px;
-    }
-
-    th {
-        display: none;
-    }
-
-    td {
-        text-align: right;
-        padding-left: 50%;
-        position: relative;
-    }
-
-    td::before {
-        content: attr(data-label);
-        position: absolute;
-        left: 10px;
-        width: 45%;
-        padding-right: 10px;
-        font-weight: bold;
-        text-align: left;
+    .btn-agregar-grande {
+        font-size: 1rem;
     }
 }

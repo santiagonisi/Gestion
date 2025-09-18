@@ -1,134 +1,147 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Presupuestos</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
-</head>
-<body>
-    <header>
-        <img src="{{ url_for('static', filename='images/Logo-Iarsa.png') }}" alt="Logo de la Empresa" class="logo">
-        <div class="header-content">
-        <h1>Gestión de Presupuestos</h1>
-        <nav>
-            <ul>
-                <li><a href="{{ url_for('presupuestos') }}">Presupuestos</a></li>
-                <li><a href="{{ url_for('proveedores') }}">Proveedores</a></li>
-            </ul>
-        </nav>
-    </header>
+{% extends "base.html" %}
+{% block content %}
+<h2 class="section-title">Gestión de Presupuestos</h2>
 
-    <h2>Agregar Presupuesto</h2>
-    <form action="{{ url_for('presupuestos') }}" method="POST" enctype="multipart/form-data">
-        <label for="proveedor_id">Proveedor:</label>
-        <select name="proveedor_id" required>
-            <option value="" selected disabled>Elegir opción</option>
+
+<div class="card mb-4 shadow-sm">
+  <div class="card-body">
+    <form method="POST" enctype="multipart/form-data">
+      <div class="row g-3">
+        <div class="col-md-4">
+          <label class="form-label">Proveedor</label>
+          <select name="proveedor_id" class="form-select" required>
+            <option value="">Seleccione...</option>
             {% for proveedor in proveedores %}
-            <option value="{{ proveedor.id }}">{{ proveedor.razonsocial }}</option>
+              <option value="{{ proveedor.id }}">{{ proveedor.razonsocial }}</option>
             {% endfor %}
-        </select>
-        
-        <label for="productos">Productos (separados por comas):</label>
-        <textarea name="productos" id="productos" rows="3" placeholder="Ejemplo: Producto 1, Producto 2, Producto 3"></textarea>
-        
-        <label for="precios_productos">Precios por Producto (separados por comas):</label>
-        <textarea name="precios_productos" id="precios_productos" rows="3" placeholder="Ejemplo: 100, 200, 300"></textarea>
-        
-        <label for="precio">Precio Total:</label>
-        <input type="text" name="precio" id="precio" required pattern="^\d+([.,]\d{1,2})?$" title="Ingrese un número válido con hasta 2 decimales (use ',' o '.')" placeholder="Ej: 1234,56">
-        
-        <label for="moneda">Moneda:</label>
-        <select name="moneda" id="moneda" required>
-            <option value="" selected disabled>Elegir opción</option>
-            <option value="ARS">ARS (Pesos Argentinos)</option>
-            <option value="USD">USD (Dólares)</option>
-        </select>
-        
-        <label for="cotizacion_dolar">Cotización del Dólar:</label>
-        <input type="text" name="cotizacion_dolar" id="cotizacion_dolar" pattern="^\d+([.,]\d{1,2})?$" title="Ingrese un número válido con hasta 2 decimales (use ',' o '.')" placeholder="Ej: 350,50">
-        
-        <label for="fecha">Fecha:</label>
-        <input type="date" name="fecha" required>
-        
-        <label for="centro_costo_id">Centro de Costos:</label>
-        <select name="centro_costo_id" required>
-            <option value="" selected disabled>Elegir opción</option>
-            {% for centro in centros_costos %}
-            <option value="{{ centro.id }}">{{ centro.nombre }}</option>
+          </select>
+        </div>
+        <div class="col-md-4">
+          <label class="form-label">Centro de Costo</label>
+          <select name="centro_costo_id" class="form-select" required>
+            {% for cc in centros_costos %}
+              <option value="{{ cc.id }}">{{ cc.nombre }}</option>
             {% endfor %}
-        </select>
-        
-        <label for="archivo_pdf">Adjuntar PDF:</label>
-        <input type="file" name="archivo_pdf" accept="application/pdf">
-        
-        <button type="submit">Agregar</button>
-    </form>
-    
-    <h2>Buscar Presupuestos</h2>
-    <form action="{{ url_for('presupuestos') }}" method="GET" class="search-form">
-        <input type="text" name="search" placeholder="Buscar por proveedor o producto" value="{{ search_query }}">
-        <button type="submit">Buscar</button>
-    </form>
+          </select>
+        </div>
+        <div class="col-md-4">
+          <label class="form-label">Fecha</label>
+          <input type="date" class="form-control" name="fecha" required>
+        </div>
+      </div>
 
-    <h2>Lista de Presupuestos</h2>
-    <table>
-        <thead>
-            <tr>
-                <th>Proveedor</th>
-                <th>Productos</th>
-                <th>Precios por Producto + IVA</th>
-                <th>Precio Total</th>
-                <th>Fecha</th>
-                <th>Centro de Costos</th>
-                <th>Cotización del Dólar a la Fecha</th>
-                <th>Detalle</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for presupuesto in presupuestos %}
-            <tr>
-                <td>{{ presupuesto.proveedor }}</td>
-                <td>
-                    <ul>
-                        {% for producto in presupuesto.productos %}
-                        <li>{{ producto }}</li>
-                        {% endfor %}
-                    </ul>
-                </td>
-                <td>
-                    <ul>
-                        {% for precio in presupuesto.precios %}
-                        <li>${{ "{:,.2f}".format(precio) }} {{ presupuesto.moneda }}</li>
-                        {% endfor %}
-                    </ul>
-                </td>
-                <td>${{ "{:,.2f}".format(presupuesto.precio_total) }} {{ presupuesto.moneda }}</td>
-                <td>{{ presupuesto.fecha }}</td>
-                <td>{{ presupuesto.centro_costo }}</td>
-                <td>
-                    {% if presupuesto.cotizacion_dolar %}
-                        ${{ "{:,.2f}".format(presupuesto.cotizacion_dolar) }}
-                    {% else %}
-                        N/A
-                    {% endif %}
-                </td>
-                <td>
-                    {% if presupuesto.pdf_path %}
-                    <a href="{{ url_for('uploaded_file', filename=presupuesto.pdf_path) }}" target="_blank">Ver PDF</a>
-                    {% else %}
-                    No disponible
-                    {% endif %}
-                </td>
-                <td>
-                    <form action="{{ url_for('eliminar_presupuesto', presupuesto_id=presupuesto.id) }}" method="POST">
-                        <button type="submit" class="btn-eliminar"></button>
-                    </form>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</body>
-</html>
+      
+      <div class="mt-3">
+        <label class="form-label">Productos y precios</label>
+        <div id="productos-container"></div>
+        <button type="button" class="btn btn-secondary btn-sm mt-2" onclick="agregarProducto()">+ Agregar Producto</button>
+      </div>
+
+      <div class="row g-3 mt-2">
+        <div class="col-md-3">
+          <label class="form-label">Precio Total</label>
+          <input type="text" class="form-control" name="precio" required>
+        </div>
+        <div class="col-md-3">
+          <label class="form-label">Moneda</label>
+          <select name="moneda" class="form-select" required>
+            <option value="ARS">ARS</option>
+            <option value="USD">USD</option>
+          </select>
+        </div>
+        <div class="col-md-3">
+          <label class="form-label">Cotización Dólar (opcional)</label>
+          <input type="text" class="form-control" name="cotizacion_dolar">
+        </div>
+        <div class="col-md-3">
+          <label class="form-label">Archivo PDF</label>
+          <input type="file" class="form-control" name="archivo_pdf" accept="application/pdf">
+        </div>
+      </div>
+      <button type="submit" class="btn btn-primary mt-3">Guardar</button>
+    </form>
+  </div>
+</div>
+
+
+<table class="table table-hover shadow-sm">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Proveedor</th>
+      <th>Productos</th>
+      <th>Precios</th>
+      <th>Total</th>
+      <th>Moneda</th>
+      <th>Cotización</th>
+      <th>Centro Costo</th>
+      <th>PDF</th>
+      <th>Acciones</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for p in presupuestos %}
+    <tr>
+      <td>{{ p.id }}</td>
+      <td>{{ p.proveedor }}</td>
+      <td>
+        <ul>
+          {% for producto in p.productos %}
+            <li>{{ producto }}</li>
+          {% endfor %}
+        </ul>
+      </td>
+      <td>
+        <ul>
+          {% for precio in p.precios %}
+            <li>{{ precio }}</li>
+          {% endfor %}
+        </ul>
+      </td>
+      <td><span class="badge bg-info">{{ p.precio_total }}</span></td>
+      <td>{{ p.moneda }}</td>
+      <td>{{ p.cotizacion_dolar or "-" }}</td>
+      <td>{{ p.centro_costo }}</td>
+      <td>
+        {% if p.pdf_path %}
+          <a href="{{ url_for('uploaded_file', filename=p.pdf_path) }}" target="_blank">Ver PDF</a>
+        {% endif %}
+      </td>
+      <td>
+        <button class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#eliminarPresupuesto{{ p.id }}">Eliminar</button>
+        <div class="modal fade" id="eliminarPresupuesto{{ p.id }}">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header"><h5>Confirmar Eliminación</h5></div>
+              <div class="modal-body">¿Eliminar presupuesto {{ p.id }}?</div>
+              <div class="modal-footer">
+                <form action="{{ url_for('eliminar_presupuesto', presupuesto_id=p.id) }}" method="POST">
+                  <button type="submit" class="btn btn-danger">Eliminar</button>
+                </form>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<script>
+function agregarProducto() {
+  const container = document.getElementById("productos-container");
+  const row = document.createElement("div");
+  row.className = "row g-2 mb-2";
+  row.innerHTML = `
+    <div class="col-md-6">
+      <input type="text" class="form-control" name="productos" placeholder="Producto">
+    </div>
+    <div class="col-md-6">
+      <input type="number" step="0.01" class="form-control" name="precios_productos" placeholder="Precio">
+    </div>`;
+  container.appendChild(row);
+}
+</script>
+{% endblock %}

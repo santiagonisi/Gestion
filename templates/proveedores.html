@@ -1,86 +1,71 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Proveedores</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
-</head>
-<body>
-    <header>
-        <img src="{{ url_for('static', filename='images/Logo-Iarsa.png') }}" alt="Logo de la Empresa" class="logo">
-        <div class="header-content">
-        <h1>Gestión de Proveedores</h1>
-        <nav>
-            <ul>
-                <li><a href="{{ url_for('presupuestos') }}">Presupuestos</a></li>
-                <li><a href="{{ url_for('proveedores') }}">Proveedores</a></li>
-            </ul>
-        </nav>
-    </header>
+{% extends "base.html" %}
+{% block content %}
+<h2 class="section-title">Gestión de Proveedores</h2>
 
-    <h2>Agregar Proveedor</h2>
-    <form action="{{ url_for('proveedores') }}" method="POST">
-        <label for="razonsocial">Razón Social:</label>
-        <input type="text" name="razonsocial" required>
 
-        <label for="contacto">Contacto:</label>
-        <input type="text" name="contacto" required>
-
-        <label for="cuit">CUIT:</label>
-        <input type="text" name="cuit">
-
-        <label for="rubro">Rubro:</label>
-        <input type="text" name="rubro">
-
-        <label for="ubicacion">Ubicación:</label>
-        <input type="text" name="ubicacion">
-
-        <label for="descripcion">Descripción:</label>
-        <textarea name="descripcion" rows="4"></textarea>
-
-        <button type="submit">Agregar</button>
+<div class="card mb-4 shadow-sm">
+  <div class="card-body">
+    <form method="POST">
+      <div class="row g-3">
+        <div class="col-md-4"><input class="form-control" name="razonsocial" placeholder="Razón Social" required></div>
+        <div class="col-md-4"><input class="form-control" name="contacto" placeholder="Contacto"></div>
+        <div class="col-md-4"><input class="form-control" name="cuit" placeholder="CUIT"></div>
+        <div class="col-md-4"><input class="form-control" name="rubro" placeholder="Rubro"></div>
+        <div class="col-md-4"><input class="form-control" name="ubicacion" placeholder="Ubicación"></div>
+        <div class="col-md-4"><input class="form-control" name="descripcion" placeholder="Descripción"></div>
+      </div>
+      <button type="submit" class="btn btn-primary mt-3">Agregar Proveedor</button>
     </form>
-    
-    <h2>Buscar Proveedor</h2>
-    <form method="GET" action="{{ url_for('proveedores') }}">
-        <input type="text" name="search" placeholder="Buscar proveedores..." value="{{ search_query }}">
-        <button type="submit">Buscar</button>
-    </form>
+  </div>
+</div>
 
-    <h2>Lista de Proveedores</h2>
-    <table>
-        <thead>
-            <tr>
-                <th>Razón Social</th>
-                <th>Contacto</th>
-                <th>CUIT</th>
-                <th>Rubro</th>
-                <th>Ubicación</th>
-                <th>Descripción</th>
-                <th>Acciones</th> 
-            </tr>
-        </thead>
-        <tbody>
-            {% for proveedor in proveedores %}
-            <tr>
-                <td>{{ proveedor.razonsocial }}</td>
-                <td>{{ proveedor.contacto }}</td>
-                <td>{{ proveedor.cuit }}</td>
-                <td>{{ proveedor.rubro }}</td>
-                <td>{{ proveedor.ubicacion }}</td>
-                <td>{{ proveedor.descripcion }}</td>
-                <td>
-                    <div class="acciones">
-                        <a href="{{ url_for('editar_proveedor', proveedor_id=proveedor.id) }}" class="btn-editar"></a>
-                        <form action="{{ url_for('eliminar_proveedor', proveedor_id=proveedor.id) }}" method="POST">
-                            <button type="submit" class="btn-eliminar"></button>
-                        </form>
-                    </div>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</body>
-</html>
+
+<table class="table table-hover shadow-sm">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Razón Social</th>
+      <th>Contacto</th>
+      <th>CUIT</th>
+      <th>Rubro</th>
+      <th>Ubicación</th>
+      <th>Descripción</th>
+      <th>Acciones</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for p in proveedores %}
+    <tr>
+      <td>{{ p.id }}</td>
+      <td>{{ p.razonsocial }}</td>
+      <td>{{ p.contacto }}</td>
+      <td>{{ p.cuit }}</td>
+      <td>{{ p.rubro }}</td>
+      <td>{{ p.ubicacion }}</td>
+      <td>{{ p.descripcion }}</td>
+      <td>
+        <a href="{{ url_for('editar_proveedor', proveedor_id=p.id) }}" class="btn btn-primary btn-sm">Editar</a>
+        <button class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#eliminarProveedor{{ p.id }}">Eliminar</button>
+
+        
+        <div class="modal fade" id="eliminarProveedor{{ p.id }}">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header"><h5>Confirmar Eliminación</h5></div>
+              <div class="modal-body">¿Eliminar proveedor {{ p.razonsocial }}?</div>
+              <div class="modal-footer">
+                <form action="{{ url_for('eliminar_proveedor', proveedor_id=p.id) }}" method="POST">
+                  <button type="submit" class="btn btn-danger">Eliminar</button>
+                </form>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

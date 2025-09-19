@@ -101,12 +101,17 @@
       <td>{{ p.cotizacion_dolar or "-" }}</td>
       <td>{{ p.centro_costo }}</td>
       <td>
-        {% if p.pdf_path %}
-          <a href="{{ url_for('uploaded_file', filename=p.pdf_path) }}" target="_blank">Ver PDF</a>
-        {% endif %}
-      </td>
+  {% if p.pdf_path %}
+    <a href="{{ url_for('uploaded_file', filename=p.pdf_path) }}" target="_blank" 
+       class="btn btn-danger btn-sm" title="Ver PDF">
+      <i class="bi bi-file-earmark-pdf-fill"></i>
+    </a>
+  {% endif %}
+</td>
       <td>
-        <button class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#eliminarPresupuesto{{ p.id }}">Eliminar</button>
+        <button class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#eliminarPresupuesto{{ p.id }}">
+          <i class="bi bi-trash"></i>
+        </button>
         <div class="modal fade" id="eliminarPresupuesto{{ p.id }}">
           <div class="modal-dialog">
             <div class="modal-content">

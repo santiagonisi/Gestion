@@ -46,8 +46,12 @@
       <td>{{ p.ubicacion }}</td>
       <td>{{ p.descripcion }}</td>
       <td>
-        <a href="{{ url_for('editar_proveedor', proveedor_id=p.id) }}" class="btn btn-primary btn-sm">Editar</a>
-        <button class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#eliminarProveedor{{ p.id }}">Eliminar</button>
+        <a href="{{ url_for('editar_proveedor', proveedor_id=p.id) }}" class="btn btn-primary btn-sm">
+          <i class="bi bi-pencil"></i>
+        </a>
+        <button class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#eliminarPresupuesto{{ p.id }}">
+          <i class="bi bi-trash"></i>
+        </button>
 
         
         <div class="modal fade" id="eliminarProveedor{{ p.id }}">

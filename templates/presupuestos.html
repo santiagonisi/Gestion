@@ -32,7 +32,7 @@
       <div class="mt-3">
         <label class="form-label">Productos y precios</label>
         <div id="productos-container"></div>
-        <button type="button" class="btn btn-secondary btn-sm mt-2" onclick="agregarProducto()">+ Agregar Producto</button>
+        <button type="button" class="btn btn-secondary btn-sm mt-3 w-100" onclick="agregarProducto()">Agregar Producto</button>
       </div>
 
       <div class="row g-3 mt-2">
@@ -96,7 +96,7 @@
           {% endfor %}
         </ul>
       </td>
-      <td><span class="badge bg-info">{{ p.precio_total }}</span></td>
+      <td><span class="badge bg-warning">{{ p.precio_total }}</span></td>
       <td>{{ p.moneda }}</td>
       <td>{{ p.cotizacion_dolar or "-" }}</td>
       <td>{{ p.centro_costo }}</td>

@@ -4,7 +4,8 @@
 
 <div class="card mb-4 shadow-sm">
   <div class="card-body">
-    <form method="POST" enctype="multipart/form-data">
+    
+    <form method="POST" action="{{ url_for('presupuestos') }}" enctype="multipart/form-data">
       <div class="row g-3">
         <div class="col-md-4">
           <label class="form-label">Proveedor</label>
@@ -61,16 +62,21 @@
   </div>
 </div>
 
-<table class="table table-hover table-bordered border-secondary-subtle shadow-sm">
+<form method="GET" action="{{ url_for('presupuestos') }}" class="mb-3">
+  <div class="input-group">
+    <input type="text" name="search" class="form-control" placeholder="Buscar por proveedor o producto..." value="{{ search_query }}">
+    <button class="btn btn-secondary" type="submit">Buscar</button>
+  </div>
+</form>
 
-    <thead class="table-light">
+<table class="table table-hover table-bordered border-secondary-subtle shadow-sm">
+  <thead class="table-light">
     <tr>
-      <th>ID</th>
       <th>Proveedor</th>
+      <th>Fecha</th>
       <th>Productos</th>
       <th>Precios</th>
       <th>Total</th>
-      <th>Moneda</th>
       <th>Cotización</th>
       <th>Centro Costo</th>
       <th>PDF</th>
@@ -80,8 +86,8 @@
   <tbody>
     {% for p in presupuestos %}
     <tr>
-      <td>{{ p.id }}</td>
       <td>{{ p.proveedor }}</td>
+      <td>{{ p.fecha }}</td>
       <td>
         <ul>
           {% for producto in p.productos %}
@@ -97,26 +103,30 @@
         </ul>
       </td>
       <td><span class="badge bg-warning">{{ p.precio_total }}</span></td>
-      <td>{{ p.moneda }}</td>
       <td>{{ p.cotizacion_dolar or "-" }}</td>
       <td>{{ p.centro_costo }}</td>
       <td>
-  {% if p.pdf_path %}
-    <a href="{{ url_for('uploaded_file', filename=p.pdf_path) }}" target="_blank" 
-       class="btn btn-danger btn-sm" title="Ver PDF">
-      <i class="bi bi-file-earmark-pdf-fill"></i>
-    </a>
-  {% endif %}
-</td>
+        {% if p.pdf_path %}
+          <a href="{{ url_for('uploaded_file', filename=p.pdf_path) }}" target="_blank" class="btn btn-danger btn-sm" title="Ver PDF">
+            <i class="bi bi-file-earmark-pdf-fill"></i>
+          </a>
+        {% endif %}
+      </td>
       <td>
         <button class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#eliminarPresupuesto{{ p.id }}">
           <i class="bi bi-trash"></i>
         </button>
-        <div class="modal fade" id="eliminarPresupuesto{{ p.id }}">
+
+        <div class="modal fade" id="eliminarPresupuesto{{ p.id }}" tabindex="-1" aria-labelledby="modalLabel{{ p.id }}" aria-hidden="true">
           <div class="modal-dialog">
             <div class="modal-content">
-              <div class="modal-header"><h5>Confirmar Eliminación</h5></div>
-              <div class="modal-body">¿Eliminar presupuesto {{ p.id }}?</div>
+              <div class="modal-header">
+                <h5 class="modal-title" id="modalLabel{{ p.id }}">Confirmar Eliminación</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+              </div>
+              <div class="modal-body">
+                ¿Está seguro que desea eliminar el presupuesto de {{ p.proveedor }}?
+              </div>
               <div class="modal-footer">
                 <form action="{{ url_for('eliminar_presupuesto', presupuesto_id=p.id) }}" method="POST">
                   <button type="submit" class="btn btn-danger">Eliminar</button>
@@ -132,19 +142,26 @@
   </tbody>
 </table>
 
+<nav aria-label="Paginación">
+  <ul class="pagination justify-content-center">
+    {% for num in range(1, total_pages + 1) %}
+      <li class="page-item {% if num == page %}active{% endif %}">
+        <a class="page-link" href="{{ url_for('presupuestos', page=num) }}">{{ num }}</a>
+      </li>
+    {% endfor %}
+  </ul>
+</nav>
+
 <script>
+let container = document.getElementById('productos-container');
 function agregarProducto() {
-  const container = document.getElementById("productos-container");
-  const row = document.createElement("div");
-  row.className = "row g-2 mb-2";
-  row.innerHTML = `
-    <div class="col-md-6">
-      <input type="text" class="form-control" name="productos[]" placeholder="Producto">
-    </div>
-    <div class="col-md-6">
-      <input type="number" step="0.01" class="form-control" name="precios_productos[]" placeholder="Precio">
-    </div>`;
-  container.appendChild(row);
+  let div = document.createElement('div');
+  div.className = "row g-2 mt-2";
+  div.innerHTML = `
+    <div class="col-md-6"><input type="text" name="productos[]" class="form-control" placeholder="Nombre producto" required></div>
+    <div class="col-md-6"><input type="text" name="precios_productos[]" class="form-control" placeholder="Precio unitario" required></div>
+  `;
+  container.appendChild(div);
 }
 </script>
 {% endblock %}

@@ -159,7 +159,8 @@ def presupuestos():
         select_query += " WHERE pr.razonsocial LIKE ? OR p.producto_nombre LIKE ?"
         params_select.extend([f"%{search_query}%", f"%{search_query}%"])
 
-    select_query += " ORDER BY p.id DESC LIMIT ? OFFSET ?"
+    select_query += " ORDER BY p.fecha DESC LIMIT ? OFFSET ?"
+
     params_select.extend([per_page, offset])
 
     cursor.execute(select_query, params_select)

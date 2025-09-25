@@ -176,7 +176,8 @@ def presupuestos():
             "proveedor": row["proveedor"],
             "productos": productos,
             "precios": precios,
-            "precio_total": f"{row['precio_total']} {row['moneda']}",
+            "precio_total": row["precio_total"],  # <-- SOLO el número
+            "moneda": row["moneda"],              # <-- agrega la moneda por separado
             "fecha": fecha_formateada,
             "cotizacion_dolar": row["cotizacion_dolar"],
             "centro_costo": row["centro_costo"],
@@ -286,6 +287,15 @@ def eliminar_presupuesto(presupuesto_id):
     conn.close()
     return redirect(url_for('presupuestos'))
 
+
+def formato_pesos(valor):
+    try:
+        valor = float(valor)
+        return "${:,.2f}".format(valor).replace(",", "X").replace(".", ",").replace("X", ".")
+    except:
+        return valor
+
+app.jinja_env.filters['formato_pesos'] = formato_pesos
 
 if __name__ == '__main__':
     crear_tablas()

@@ -98,12 +98,16 @@
       <td>
         <ul>
           {% for precio in p.precios %}
-            <li>{{ precio }}</li>
-          {% endfor %}
-        </ul>
-      </td>
-      <td><span class="badge bg-warning">{{ p.precio_total }}</span></td>
-      <td>{{ p.cotizacion_dolar or "-" }}</td>
+      <li>{{ precio|formato_pesos }}</li>
+    {% endfor %}
+  </ul>
+</td>
+<td>
+  <span class="badge bg-warning">
+    {{ p.precio_total|formato_pesos }} {{ p.moneda }}
+  </span>
+</td>
+      <td>{{ p.cotizacion_dolar|formato_pesos if p.cotizacion_dolar else "-" }}</td>
       <td>{{ p.centro_costo }}</td>
       <td>
         {% if p.pdf_path %}
